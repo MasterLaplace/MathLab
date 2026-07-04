@@ -1,5 +1,5 @@
 import { ComputeEngine } from '@cortex-js/compute-engine';
-import { type Expr, evalNumeric, freeVariables, isCall, normalize, sameExpr, substitute } from './ast';
+import { type Expr, evalNumeric, freeVariables, isCall, normalize, sameExprUpToOrder, substitute } from './ast';
 
 let ce: ComputeEngine | null = null;
 function engine(): ComputeEngine {
@@ -55,9 +55,12 @@ function containsHead(e: Expr, h: string): boolean {
 function structurallySame(a: Expr, b: Expr): boolean {
   const na = normalize(a);
   const nb = normalize(b);
-  if (sameExpr(na, nb)) return true;
+  if (sameExprUpToOrder(na, nb)) return true;
   if (isCall(na) && na[0] === 'Equal' && isCall(nb) && nb[0] === 'Equal') {
-    return sameExpr(na[1] as Expr, nb[2] as Expr) && sameExpr(na[2] as Expr, nb[1] as Expr);
+    return (
+      sameExprUpToOrder(na[1] as Expr, nb[2] as Expr) &&
+      sameExprUpToOrder(na[2] as Expr, nb[1] as Expr)
+    );
   }
   return false;
 }

@@ -19,6 +19,10 @@ import { UnitCircleExplorer } from '../Physics/UnitCircleExplorer';
 import { DirectionFieldExplorer } from '../Physics/DirectionFieldExplorer';
 import { GaltonExplorer } from '../Physics/GaltonExplorer';
 import { BayesExplorer } from '../Physics/BayesExplorer';
+import { RiemannExplorer } from '../Physics/RiemannExplorer';
+import { PoleExplorer } from '../Physics/PoleExplorer';
+import { ComplexExplorer } from '../Physics/ComplexExplorer';
+import { EpicyclesExplorer } from '../Physics/EpicyclesExplorer';
 import './lesson.css';
 
 interface ExercisePlayerProps {
@@ -139,6 +143,10 @@ export function ExercisePlayer({ exercise, onSuccess }: ExercisePlayerProps) {
       {exercise.sim?.type === 'direction-field' && <DirectionFieldExplorer />}
       {exercise.sim?.type === 'galton' && <GaltonExplorer />}
       {exercise.sim?.type === 'bayes' && <BayesExplorer />}
+      {exercise.sim?.type === 'riemann' && <RiemannExplorer />}
+      {exercise.sim?.type === 'poles' && <PoleExplorer />}
+      {exercise.sim?.type === 'complex' && <ComplexExplorer />}
+      {exercise.sim?.type === 'epicycles' && <EpicyclesExplorer />}
 
       {exercise.free && !solved && (
         <button

@@ -85,6 +85,23 @@ function neutralMove(expr: Expr, from: Path, label: string): Move {
   return { ruleId: 'neutral', kind: 'tap', from, label, result: removeArgAt(expr, from) };
 }
 
+/** Multiplier par 0 anéantit le produit : appuyer sur le 0 le propage. */
+export const multiplyByZero: Rule = (expr, from) => {
+  if (from.length === 0) return [];
+  const node = getAt(expr, from);
+  const parent = getAt(expr, from.slice(0, -1));
+  if (node !== 0 || parent === undefined || !isCall(parent) || parent[0] !== 'Multiply') return [];
+  return [
+    {
+      ruleId: 'mult-zero',
+      kind: 'tap',
+      from,
+      label: 'Multiplier par 0 donne 0 : tout le produit s’effondre',
+      result: setAt(expr, from.slice(0, -1), 0),
+    },
+  ];
+};
+
 /**
  * Annulation additive : dans une somme, glisser `a` sur `-a` (ou l'inverse)
  * fait disparaître les deux — ils s'annulent.
@@ -285,6 +302,7 @@ function splitTerm(t: Expr): { coeff: number; base: Expr | null } | null {
 export const cancelRules: Rule[] = [
   computeNumeric,
   removeNeutral,
+  multiplyByZero,
   cancelAdditivePair,
   combineLikeTerms,
   cancelFractionFactor,

@@ -137,6 +137,48 @@ export const deriveRules: Rule[] = [
         }
       }
 
+      // Règle de la chaîne : f(u) où u n'est pas la variable elle-même.
+      if (body.length === 2 && body[1] !== v && dependsOn(body[1] as Expr, v)) {
+        const u = body[1] as Expr;
+        const du: Expr = ['D', u, v];
+        const OUTER: Record<string, { result: Expr; label: string }> = {
+          Sin: { result: ['Multiply', ['Cos', u], du], label: 'Chaîne : (sin u)′ = cos u · u′' },
+          Cos: { result: ['Negate', ['Multiply', ['Sin', u], du]], label: 'Chaîne : (cos u)′ = −sin u · u′' },
+          Exp: { result: ['Multiply', ['Exp', u], du], label: 'Chaîne : (eᵘ)′ = eᵘ · u′' },
+          Ln: { result: ['Divide', du, u], label: 'Chaîne : (ln u)′ = u′/u' },
+        };
+        const outer = OUTER[h as string];
+        if (outer) {
+          moves.push(
+            tap(
+              expr,
+              from,
+              'derive-chain',
+              outer.label,
+              'Fonction dans une fonction : la vitesse totale est la vitesse de l’extérieur (prise au point intérieur) multipliée par la vitesse de l’intérieur.',
+              outer.result,
+            ),
+          );
+        }
+      }
+
+      // Chaîne sur une puissance : (uⁿ)′ = n·uⁿ⁻¹·u′.
+      if (h === 'Power' && body[1] !== v && typeof body[2] === 'number' && dependsOn(body[1] as Expr, v)) {
+        const u = body[1] as Expr;
+        const n = body[2];
+        const reduced: Expr = n === 2 ? u : (['Power', u, n - 1] as Expr);
+        moves.push(
+          tap(
+            expr,
+            from,
+            'derive-chain-power',
+            `Chaîne : (u${sup(n)})′ = ${n}·u${n === 2 ? '' : sup(n - 1)}·u′`,
+            'La règle de la puissance s’applique à l’enveloppe, puis on multiplie par la dérivée de l’intérieur.',
+            ['Multiply', n, reduced, ['D', u, v]],
+          ),
+        );
+      }
+
       // Fonctions célèbres, argument exactement x.
       if (body.length === 2 && body[1] === v) {
         if (h === 'Sin') {

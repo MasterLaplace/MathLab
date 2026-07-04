@@ -81,6 +81,32 @@ export function sameExpr(a: Expr, b: Expr): boolean {
   return false;
 }
 
+/**
+ * Égalité structurelle à commutativité près : `3 + 3i` et `3i + 3` sont le
+ * même état. Seuls `Add` et `Multiply` autorisent la permutation des
+ * arguments (appariement multiset avec retour arrière — arités minuscules).
+ */
+export function sameExprUpToOrder(a: Expr, b: Expr): boolean {
+  if (a === b) return true;
+  if (!isCall(a) || !isCall(b) || a[0] !== b[0] || a.length !== b.length) return false;
+  if (a[0] === 'Add' || a[0] === 'Multiply') {
+    const rest = b.slice(1) as Expr[];
+    const used = new Array<boolean>(rest.length).fill(false);
+    const match = (i: number): boolean => {
+      if (i >= a.length) return true;
+      for (let j = 0; j < rest.length; j++) {
+        if (used[j] || !sameExprUpToOrder(a[i] as Expr, rest[j])) continue;
+        used[j] = true;
+        if (match(i + 1)) return true;
+        used[j] = false;
+      }
+      return false;
+    };
+    return match(1);
+  }
+  return a.every((x, i) => i === 0 || sameExprUpToOrder(x as Expr, b[i] as Expr));
+}
+
 /** Met en forme canonique : Subtract→Add/Negate, aplatit Add/Multiply, plie Negate. */
 export function normalize(e: Expr): Expr {
   if (!isCall(e)) return e;

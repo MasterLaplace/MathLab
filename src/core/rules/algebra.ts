@@ -134,4 +134,48 @@ export const addFractions: Rule = (expr, from) => {
   return moves;
 };
 
-export const algebraRules: Rule[] = [distribute, factorCommon, addFractions];
+/** Base et exposant d'un facteur : `x` → (x, 1) ; `xⁿ` → (x, n). Nombres exclus. */
+function splitFactor(f: Expr): { base: Expr; exp: number } | null {
+  if (typeof f === 'number') return null;
+  if (isCall(f) && f[0] === 'Power' && typeof f[2] === 'number') {
+    return { base: f[1] as Expr, exp: f[2] };
+  }
+  return { base: f, exp: 1 };
+}
+
+/**
+ * Puissances : dans un produit, glisser `x` sur `x` les fusionne en `x²`
+ * (et `xⁿ` sur `xᵐ` en `xⁿ⁺ᵐ`) — les exposants s'additionnent.
+ */
+export const combineEqualFactors: Rule = (expr, from) => {
+  if (from.length === 0) return [];
+  const parentPath = from.slice(0, -1);
+  const parent = getAt(expr, parentPath);
+  if (parent === undefined || !isCall(parent) || parent[0] !== 'Multiply') return [];
+  const index = from[from.length - 1];
+  const source = splitFactor(parent[index] as Expr);
+  if (!source) return [];
+
+  const moves: Move[] = [];
+  for (let i = 1; i < parent.length; i++) {
+    if (i === index) continue;
+    const target = splitFactor(parent[i] as Expr);
+    if (!target || !sameExpr(source.base, target.base)) continue;
+    const exp = source.exp + target.exp;
+    const combined: Expr = exp === 1 ? source.base : ['Power', source.base, exp];
+    let result = setAt(expr, [...parentPath, i], combined);
+    result = removeArgAt(result, from);
+    moves.push({
+      ruleId: 'combine-factors',
+      kind: 'drag',
+      from,
+      to: [...parentPath, i],
+      label: 'Les mêmes facteurs se regroupent : les exposants s’additionnent',
+      result,
+    });
+    break;
+  }
+  return moves;
+};
+
+export const algebraRules: Rule[] = [distribute, factorCommon, addFractions, combineEqualFactors];

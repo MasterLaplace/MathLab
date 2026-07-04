@@ -49,12 +49,12 @@ profondeur).
 
 ### G. Les dérivées ✅ (partiel)
 - **Contenu fait** : pente de la tangente explorée à la main (x²→2x).
-- **Fait aussi** : la dérivation **par gestes** (`rules/derive.ts` : constante, xⁿ, linéarité, sortie des constantes, sin/cos/exp/ln, règle du produit — chaque règle est un tap).
-- **⏳ Reste** : règle de la chaîne, limites racontées (Zénon, vitesse instantanée), notation de Leibniz manipulable (dx qui « se simplifie »).
+- **Fait aussi** : la dérivation **par gestes** (`rules/derive.ts` : constante, xⁿ, linéarité, sortie des constantes, sin/cos/exp/ln, règle du produit — chaque règle est un tap), et la **règle de la chaîne** (sin/cos/exp/ln/uⁿ composés : la dérivée intérieure reste en attente dans un nouveau d/dx — leçon `p4-chaine`).
+- **⏳ Reste** : limites racontées (Zénon, vitesse instantanée), notation de Leibniz manipulable (dx qui « se simplifie »).
 
-### H. Les intégrales 🔨 (batch 3 : intégration par gestes + Riemann)
-- **Contenu fait** : aire sous la courbe explorée (b²/2), théorème fondamental énoncé.
-- **⏳ Reste** : sommes de Riemann animées (n→∞), intégration par gestes (primitives usuelles comme règles), travail d'une force = aire.
+### H. Les intégrales ✅ (partiel)
+- **Contenu fait** : aire sous la courbe explorée (b²/2), sommes de Riemann interactives (n → ∞ au curseur), intégration **par gestes** (`rules/integrate.ts` : constante, xⁿ, linéarité, sin/cos/exp, 1/x → ln) et **théorème fondamental en un tap** (D(∫f) → f, ∫(f′) → f).
+- **⏳ Reste** : travail d'une force = aire, intégration par parties/substitution.
 
 ---
 
@@ -93,23 +93,21 @@ profondeur).
 
 ### O. Ondes et séries de Fourier ✅ (partiel)
 - **Contenu** : toute onde = somme de sinusoïdes ; construire un signal carré/triangle en empilant des harmoniques ; spectre = recette.
-- **Geste/visuel** : `FourierExplorer` — curseur « nombre d'harmoniques », chaque sinusoïde tracée + la somme qui converge (phénomène de Gibbs visible !).
-- **⏳ Suite** : épicycles (sommes de cercles tournants qui dessinent n'importe quoi), corde vibrante (modes propres), transformée de Fourier continue (dualité temps↔fréquence, préparation à Heisenberg).
+- **Geste/visuel** : `FourierExplorer` — curseur « nombre d'harmoniques », chaque sinusoïde tracée + la somme qui converge (phénomène de Gibbs visible !). **Fait aussi** : les épicycles (`EpicyclesExplorer`, Phase 12 : cercles tournants e^{ikt} qui dessinent le créneau — le pont Fourier↔complexes).
+- **⏳ Suite** : corde vibrante (modes propres), transformée de Fourier continue (dualité temps↔fréquence, préparation à Heisenberg).
 
 ---
 
 ## Bloc 3 — Licence/prépa solide ⏳
 
-### P. Laplace et les systèmes de contrôle 🔨 (batch 3)
+### P. Laplace et les systèmes de contrôle ✅ (partiel)
 - **Contenu** : la transformée qui change les dérivées en multiplications — l'EDO cauchemardesque devient un polynôme de collège ; pôles et stabilité ; fonctions de transfert.
-- **Geste** : appliquer 𝓛 des deux côtés *par glissement* (le moteur de règles apprend `Laplace`), résoudre algébriquement (acquis !), revenir par 𝓛⁻¹.
-- **Visuel** : plan des pôles ↔ réponse temporelle côte à côte (on déplace un pôle, la réponse change).
+- **Fait** : la table par taps (`rules/laplace.ts` : 1, t, e^(at), sin/cos, linéarité) et l'inverse ℒ⁻¹ ; pipeline EDO complet (transformer → isoler Y par les gestes acquis → revenir) ; `PoleExplorer` (pôle draggable ↔ réponse temporelle, stabilité).
+- **⏳ Reste** : ℒ{y′} = sY − y(0) comme règle gestuelle, fonctions de transfert composées, décomposition en éléments simples.
 
-### Q. Les nombres complexes et leur plan ⏳
-- **Contenu** : i comme rotation de 90°, e^{iθ} = cercle unité (la formule d'Euler *vue*), racines de l'unité, fonctions complexes comme déformations du plan (domain coloring), intro résidus.
-- **Geste** : multiplier deux complexes = additionner les angles (manipulation sur le plan).
-- **Visuel** : plan complexe interactif ; domain coloring en canvas.
-- **Moteur** : type `Complex` dans l'AST, règles de module/argument.
+### Q. Les nombres complexes et leur plan ✅ (partiel)
+- **Fait** (Phase 12) : i comme rotation de 90° par gestes (`rules/complex.ts` : cycle des puissances iⁿ, formule d'Euler déplier/replier en un tap) + valeurs exactes du cercle (`rules/trig.ts` : sin/cos de 0…2π par taps) ; **e^{iπ} = −1 démontré en 5 gestes** ; `ComplexExplorer` (z et w draggables : les modules se multiplient, les angles s'additionnent) ; épicycles (pont vers Fourier).
+- **⏳ Reste** : racines de l'unité, fonctions complexes comme déformations du plan (domain coloring), intro résidus, arithmétique complexe complète dans le moteur (produit (a+bi)(c+di) par gestes, conjugué, module).
 
 ### R. Grandes équations I : Maxwell ✅ (version lecture) → ⏳
 - **Fait** : les 4 équations *lues comme de la prose* (cours riche : chaque équation = une phrase sur les sources et les tourbillons), champ 2D source vs vortex en exploration.
@@ -168,8 +166,8 @@ profondeur).
 | Cours riches + KaTeX effectif (`CourseBlock`, `CourseView`) | Stations I+ : impossible d'écrire un vrai cours en `string[]` | ✅ |
 | 3D canvas maison (projection + painter's algorithm) | Station M : surfaces z=f(x,y) — ~1000 quads, 60 fps garanti sans lib | ✅ |
 | Three.js/WebGL | Scènes 3D complexes (W : espace-temps, champs 3D denses) | ⏳ |
-| Type `Complex` + règles associées dans le moteur | Station Q | ⏳ |
-| Règles de dérivation/intégration symboliques gestuelles | Stations G/H complètes, prérequis U/V | ✅ dérivation · ⏳ intégration |
+| Type `Complex` + règles associées dans le moteur | Station Q | ✅ partiel (`i` symbole + cycle iⁿ + Euler ; arithmétique complète ⏳) |
+| Règles de dérivation/intégration symboliques gestuelles | Stations G/H complètes, prérequis U/V | ✅ dérivation + chaîne · ⏳ intégration par parties |
 | Objets non numériques (permutations, matrices dans l'AST) | Stations K (manipuler Av=λv), X | ⏳ (K partiel au batch : visuel seulement) |
 | Web Workers pour le CAS | Si une vérification d'équivalence bloque l'UI (> ~50 ms) — pas observé à ce jour | ⏳ |
 | Fluide 2D temps réel (TS pur d'abord) | Station S | ⏳ |

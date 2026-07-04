@@ -1,6 +1,8 @@
 import type { Exercise, Lesson } from './schema';
 import { lessonsPhases6to9 } from './phases678';
 import { lessonsComplements } from './complements';
+import { lessonsPhase11 } from './phase11';
+import { lessonsPhase12 } from './phase12';
 
 /** Entier aléatoire dans [min, max]. */
 function rand(min: number, max: number): number {
@@ -612,6 +614,8 @@ export const lessons: Lesson[] = [
   ...lessonsPhases1to5,
   ...lessonsPhases6to9,
   ...lessonsComplements,
+  ...lessonsPhase11,
+  ...lessonsPhase12,
 ];
 
 export function lessonById(id: string): Lesson | undefined {

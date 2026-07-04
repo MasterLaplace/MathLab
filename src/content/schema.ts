@@ -35,7 +35,11 @@ export type SimSpec =
   | { type: 'unit-circle' }
   | { type: 'direction-field' }
   | { type: 'galton' }
-  | { type: 'bayes' };
+  | { type: 'bayes' }
+  | { type: 'riemann' }
+  | { type: 'poles' }
+  | { type: 'complex' }
+  | { type: 'epicycles' };
 
 export type SurfaceKind = 'bowl' | 'saddle' | 'wave';
 

@@ -19,6 +19,8 @@ const PHASE_TITLES: Record<number, string> = {
   8: 'Phase 8 — Surfaces et champs : la 3ᵉ dimension',
   9: 'Phase 9 — Ondes et grandes équations',
   10: 'Phase 10 — Le hasard apprivoisé : probabilités',
+  11: 'Phase 11 — Le pays de Laplace',
+  12: 'Phase 12 — Le plan complexe : la rotation devenue nombre',
 };
 
 /** Une leçon terminée depuis plus de 3 jours mérite une révision. */
