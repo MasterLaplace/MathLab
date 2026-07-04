@@ -1,0 +1,79 @@
+.course {
+  max-width: 46rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+.course-p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.course-math {
+  margin: 0.2rem 0;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+}
+.course-math-eq { font-size: 1.15rem; overflow-x: auto; }
+.course-math figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.course-example {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+}
+.course-example-title {
+  font-weight: 650;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+.course-example ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.course-callout {
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--border);
+}
+.course-callout p { margin: 0.35rem 0 0; line-height: 1.6; }
+.course-callout-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.course-callout-idea {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.course-callout-idea .course-callout-label { color: var(--accent); }
+.course-callout-warn {
+  background: color-mix(in srgb, var(--warn) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--warn) 40%, var(--border));
+}
+.course-callout-warn .course-callout-label { color: var(--warn); }
+.course-callout-story {
+  background: color-mix(in srgb, var(--ok) 7%, var(--surface));
+  border-color: color-mix(in srgb, var(--ok) 35%, var(--border));
+}
+.course-callout-story .course-callout-label { color: var(--ok); }
+
+/* KaTeX hérite de la couleur du texte du thème. */
+.course .katex { font-size: 1.05em; }
