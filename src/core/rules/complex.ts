@@ -91,7 +91,45 @@ export const complexRules: Rule[] = [
     }
     return [];
   },
+  // (e^{θ})ⁿ → e^{n·θ} : élever une exponentielle à une puissance multiplie l'angle.
+  (expr, from) => {
+    const node = getAt(expr, from);
+    if (node === undefined || !isCall(node) || node[0] !== 'Power') return [];
+    const base = node[1];
+    const n = node[2];
+    if (!isCall(base) || base[0] !== 'Exp' || typeof n !== 'number' || !Number.isInteger(n) || n < 2) {
+      return [];
+    }
+    return [
+      tap(
+        expr,
+        from,
+        'exp-power',
+        `(e^θ)${sup(n)} = e^{${n}θ} : la puissance multiplie l’angle`,
+        'Multiplier des exponentielles additionne leurs exposants : n copies du même angle font n fois l’angle. Sur le cercle, élever à la puissance n, c’est tourner n fois plus loin.',
+        ['Exp', scaleAngle(base[1] as Expr, n)],
+      ),
+    ];
+  },
 ];
+
+/** n·θ, en repliant n dans un éventuel dénominateur : 3·(2π/3) → 2π. */
+function scaleAngle(theta: Expr, n: number): Expr {
+  const factors = isCall(theta) && theta[0] === 'Multiply' ? (theta.slice(1) as Expr[]) : [theta];
+  const dIdx = factors.findIndex(
+    (f) => isCall(f) && f[0] === 'Divide' && typeof f[2] === 'number' && n % (f[2] as number) === 0,
+  );
+  if (dIdx !== -1) {
+    const div = factors[dIdx] as [string, Expr, number];
+    const k = n / div[2];
+    const num = div[1];
+    const numFactors = isCall(num) && num[0] === 'Multiply' ? (num.slice(1) as Expr[]) : [num];
+    const rest = [...factors.slice(0, dIdx), ...factors.slice(dIdx + 1)];
+    const all = k === 1 ? [...rest, ...numFactors] : [k, ...rest, ...numFactors];
+    return all.length === 1 ? all[0] : normalize(['Multiply', ...all]);
+  }
+  return normalize(['Multiply', n, ...factors]);
+}
 
 function sup(n: number): string {
   const SUP: Record<string, string> = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };

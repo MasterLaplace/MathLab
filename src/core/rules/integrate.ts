@@ -121,6 +121,71 @@ export const integrateRules: Rule[] = [
         }
       }
 
+      // Substitution linéaire : ∫ f(a·x) dx = F(a·x)/a — l'angle défile a
+      // fois plus vite, l'aire est a fois plus petite.
+      if ((h === 'Sin' || h === 'Cos' || h === 'Exp') && body.length === 2) {
+        const arg = body[1] as Expr;
+        if (isCall(arg) && arg[0] === 'Multiply' && arg.length === 3 && typeof arg[1] === 'number' && arg[2] === v) {
+          const a = arg[1];
+          const primitive: Expr =
+            h === 'Sin' ? ['Negate', ['Cos', arg]] : h === 'Cos' ? ['Sin', arg] : ['Exp', arg];
+          const name = h === 'Sin' ? 'sin' : h === 'Cos' ? 'cos' : 'e^';
+          moves.push(
+            tap(
+              expr,
+              from,
+              'int-linear',
+              `Substitution : ∫${name}(${a}x) = ${h === 'Sin' ? '−cos' : h === 'Cos' ? 'sin' : 'e^'}(${a}x)/${a}`,
+              'Pose u = a·x : la fonction défile a fois plus vite, donc chaque arche est a fois plus étroite — la primitive se divise par a. Dérive le résultat (règle de la chaîne !) pour vérifier.',
+              ['Divide', primitive, a],
+            ),
+          );
+        }
+      }
+
+      // Intégration par parties : ∫ u·f dx = u·V − ∫ u′·V dx, où V est la
+      // primitive (connue) de f = sin/cos/exp. Le u′ reste en attente dans
+      // un nouveau D que l'élève résout avec ses gestes.
+      if (h === 'Multiply' && body.length === 3) {
+        for (const [u, f] of [
+          [body[1] as Expr, body[2] as Expr],
+          [body[2] as Expr, body[1] as Expr],
+        ] as const) {
+          if (!dependsOn(u, v) || !isCall(f) || f.length !== 2 || f[1] !== v) continue;
+          const du: Expr = ['D', u, v];
+          const why =
+            'On intègre le facteur facile (V), on dérive l’autre (u′) : ∫u·f = u·V − ∫u′·V. Le produit se déshabille d’un facteur à chaque tour.';
+          if (f[0] === 'Cos') {
+            moves.push(
+              tap(expr, from, 'int-parts', 'Par parties : ∫u·cos = u·sin − ∫u′·sin', why, [
+                'Add',
+                ['Multiply', u, ['Sin', v]],
+                ['Negate', ['Int', ['Multiply', du, ['Sin', v]], v]],
+              ]),
+            );
+          }
+          if (f[0] === 'Sin') {
+            moves.push(
+              tap(expr, from, 'int-parts', 'Par parties : ∫u·sin = −u·cos + ∫u′·cos', why, [
+                'Add',
+                ['Negate', ['Multiply', u, ['Cos', v]]],
+                ['Int', ['Multiply', du, ['Cos', v]], v],
+              ]),
+            );
+          }
+          if (f[0] === 'Exp') {
+            moves.push(
+              tap(expr, from, 'int-parts', 'Par parties : ∫u·eˣ = u·eˣ − ∫u′·eˣ', why, [
+                'Add',
+                ['Multiply', u, ['Exp', v]],
+                ['Negate', ['Int', ['Multiply', du, ['Exp', v]], v]],
+              ]),
+            );
+          }
+          if (moves.some((m) => m.ruleId === 'int-parts')) break;
+        }
+      }
+
       // Fonctions célèbres, argument exactement x.
       if (body.length === 2 && body[1] === v) {
         if (h === 'Sin') {

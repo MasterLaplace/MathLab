@@ -53,8 +53,9 @@ profondeur).
 - **⏳ Reste** : limites racontées (Zénon, vitesse instantanée), notation de Leibniz manipulable (dx qui « se simplifie »).
 
 ### H. Les intégrales ✅ (partiel)
-- **Contenu fait** : aire sous la courbe explorée (b²/2), sommes de Riemann interactives (n → ∞ au curseur), intégration **par gestes** (`rules/integrate.ts` : constante, xⁿ, linéarité, sin/cos/exp, 1/x → ln) et **théorème fondamental en un tap** (D(∫f) → f, ∫(f′) → f).
-- **⏳ Reste** : travail d'une force = aire, intégration par parties/substitution.
+- **Contenu fait** : aire sous la courbe explorée (b²/2), sommes de Riemann interactives (n → ∞ au curseur), intégration **par gestes** (`rules/integrate.ts` : constante, xⁿ, linéarité, sin/cos/exp, 1/x → ln) et **théorème fondamental en un tap** (D(∫f) → f, ∫(f′) → f) ; **intégration par parties par gestes** (`int-parts` : ∫u·v′ = u·v − ∫u′·v pour sin/cos/exp, le u′ reste en attente dans un D).
+- **✅ aussi** : substitution linéaire par gestes (`int-linear` : ∫f(ax) = F(ax)/a).
+- **⏳ Reste** : travail d'une force = aire, changement de variable général.
 
 ---
 
@@ -94,7 +95,8 @@ profondeur).
 ### O. Ondes et séries de Fourier ✅ (partiel)
 - **Contenu** : toute onde = somme de sinusoïdes ; construire un signal carré/triangle en empilant des harmoniques ; spectre = recette.
 - **Geste/visuel** : `FourierExplorer` — curseur « nombre d'harmoniques », chaque sinusoïde tracée + la somme qui converge (phénomène de Gibbs visible !). **Fait aussi** : les épicycles (`EpicyclesExplorer`, Phase 12 : cercles tournants e^{ikt} qui dessinent le créneau — le pont Fourier↔complexes).
-- **⏳ Suite** : corde vibrante (modes propres), transformée de Fourier continue (dualité temps↔fréquence, préparation à Heisenberg).
+- **✅ aussi** : la corde vibrante (`StringExplorer` : modes propres animés, nœuds, corde pincée = somme des 5 premiers modes — le problème qui a créé Fourier).
+- **⏳ Suite** : transformée de Fourier continue (dualité temps↔fréquence, préparation à Heisenberg).
 
 ---
 
@@ -102,44 +104,54 @@ profondeur).
 
 ### P. Laplace et les systèmes de contrôle ✅ (partiel)
 - **Contenu** : la transformée qui change les dérivées en multiplications — l'EDO cauchemardesque devient un polynôme de collège ; pôles et stabilité ; fonctions de transfert.
-- **Fait** : la table par taps (`rules/laplace.ts` : 1, t, e^(at), sin/cos, linéarité) et l'inverse ℒ⁻¹ ; pipeline EDO complet (transformer → isoler Y par les gestes acquis → revenir) ; `PoleExplorer` (pôle draggable ↔ réponse temporelle, stabilité).
-- **⏳ Reste** : ℒ{y′} = sY − y(0) comme règle gestuelle, fonctions de transfert composées, décomposition en éléments simples.
+- **Fait** : la table par taps (`rules/laplace.ts` : 1, t, e^(at), sin/cos, linéarité) et l'inverse ℒ⁻¹ ; pipeline EDO complet (transformer → isoler Y par les gestes acquis → revenir) ; `PoleExplorer` (pôle draggable ↔ réponse temporelle, stabilité) ; **ℒ{y′} = sY − y₀ et ℒ{y} = Y comme gestes** (`lt-derive`/`lt-y`) + ℒ⁻¹ à numérateur symbolique — le pipeline EDO est 100 % gestuel, condition initiale comprise (y = y₀·e^(−2t)).
+- **✅ aussi** : **ℒ{y″} = s²Y − sy₀ − v₀** (`lt-derive2`), retours sin/cos (`ilt-cos`/`ilt-sin` : le ressort y = y₀·cos 2t résolu par Laplace), **éléments simples** (`partial-fractions` : c/((s+a)(s+b)) se scinde en un tap) et `ilt-neg`.
+- **⏳ Reste** : fonctions de transfert composées, pôles complexes amortis (s+a)²+ω².
 
 ### Q. Les nombres complexes et leur plan ✅ (partiel)
-- **Fait** (Phase 12) : i comme rotation de 90° par gestes (`rules/complex.ts` : cycle des puissances iⁿ, formule d'Euler déplier/replier en un tap) + valeurs exactes du cercle (`rules/trig.ts` : sin/cos de 0…2π par taps) ; **e^{iπ} = −1 démontré en 5 gestes** ; `ComplexExplorer` (z et w draggables : les modules se multiplient, les angles s'additionnent) ; épicycles (pont vers Fourier).
-- **⏳ Reste** : racines de l'unité, fonctions complexes comme déformations du plan (domain coloring), intro résidus, arithmétique complexe complète dans le moteur (produit (a+bi)(c+di) par gestes, conjugué, module).
+- **Fait** (Phase 12) : i comme rotation de 90° par gestes (`rules/complex.ts` : cycle des puissances iⁿ, formule d'Euler déplier/replier en un tap) + valeurs exactes du cercle (`rules/trig.ts` : sin/cos de 0…2π par taps) ; **e^{iπ} = −1 démontré en 5 gestes** ; `ComplexExplorer` (z et w draggables : les modules se multiplient, les angles s'additionnent) ; épicycles (pont vers Fourier) ; **racines de l'unité** (`exp-power` : la puissance multiplie l'angle, ω³ = 1 vérifié en 6 gestes ; `RootsExplorer` : polygones et étoiles sur le cercle, somme nulle).
+- **✅ aussi** : **domain coloring** (`DomainColoringExplorer` : z², 1/z, (z²−1)/z, e^z peints — teinte = argument, luminosité = module ; zéros et pôles visibles à l'œil).
+- **⏳ Reste** : intro résidus, arithmétique complexe complète dans le moteur (produit (a+bi)(c+di) par gestes, conjugué, module).
 
-### R. Grandes équations I : Maxwell ✅ (version lecture) → ⏳
+### R. Grandes équations I : Maxwell ✅ (partiel)
 - **Fait** : les 4 équations *lues comme de la prose* (cours riche : chaque équation = une phrase sur les sources et les tourbillons), champ 2D source vs vortex en exploration.
-- **⏳ Suite** : ondes électromagnétiques animées (E et B qui s'engendrent), la lumière découverte au bout du calcul c=1/√(ε₀μ₀) par gestes, jauge et potentiels.
+- **✅ aussi** : **ondes EM animées** (`EMWaveExplorer` : E ⊥ B en phase, perspective, c = λf) ; leçon « la lumière est une onde EM » (Maxwell 1865 → Hertz → Marconi).
+- **⏳ Suite** : c = 1/√(ε₀μ₀) découvert par gestes, jauge et potentiels.
 
-### S. Grandes équations II : Navier-Stokes et les fluides ⏳
+### S. Grandes équations II : Navier-Stokes et les fluides ✅ (partiel)
 - **Contenu** : NS = F=ma pour un fluide, terme par terme (convection, pression, viscosité=Laplacien lisseur, gravité) ; nombre de Reynolds par analyse dimensionnelle (station I !) ; laminaire vs turbulent.
-- **Visuel** : simulation de fluide 2D temps réel (grille eulérienne stable ~64×64, faisable en TS pur ; **premier candidat sérieux pour WASM si on monte en résolution**).
+- **✅ Fait** : **fluide 2D temps réel** (`FluidExplorer` : solveur « stable fluids » de Stam 64×64 en TS pur — diffusion, advection, projection ; souris = encre + impulsion, curseur de viscosité → volutes/turbulence) ; leçon NS terme à terme + nombre de Reynolds par gestes.
+- **⏳ Suite** : montée en résolution (WASM), obstacles, visualisation de la vorticité.
 - **Bonus** : curve fitting sur données réelles (upload vidéo/CSV, style Tracker) — la méthode scientifique complète.
 
 ### T. Probabilités et statistiques ✅ (fondations)
-- **Fait** : favorables/possibles, indépendance, complémentaire (Phase 10) ; planche de Galton animée (binomiale→cloche, théorème central limite) ; Bayes en population de 10 000 points (le test médical à 10 %).
-- **⏳ Reste** : arbres pondérés manipulables, variables aléatoires et espérance, estimation, marches aléatoires→diffusion (pont vers la physique statistique).
+- **Fait** : favorables/possibles, indépendance, complémentaire (Phase 10) ; planche de Galton animée (binomiale→cloche, théorème central limite) ; Bayes en population de 10 000 points (le test médical à 10 %) ; **arbres pondérés manipulables** (`ProbTreeExplorer` : 3 curseurs, feuilles multipliées, somme toujours 1 ; `mul-fractions` : multiplier des fractions par glissement) ; **espérance** (E = Σ valeur × probabilité, dé et pari par gestes).
+- **✅ aussi** : **marches aléatoires** (`RandomWalkExplorer` : 400 marcheurs, enveloppe ±√t, histogramme→cloche ; Einstein-Perrin en story) — le pont vers la diffusion est posé.
+- **⏳ Reste** : estimation, équation de la chaleur explicite.
 - **Geste** : arbres de probabilité manipulables, formule de Bayes par glissement.
 - **Visuels** : Galton board, histogrammes vivants, marche aléatoire 1D/2D.
 
-### U. Mécanique analytique : Lagrange et Hamilton ⏳
+### U. Mécanique analytique : Lagrange et Hamilton ✅ (partiel)
 - **Contenu** : principe de moindre action (la nature optimise), coordonnées généralisées, L=T−V, équations d'Euler-Lagrange, H et l'espace des phases, théorème de Noether (symétrie ⇒ conservation — l'une des plus belles idées de la physique).
-- **Visuel** : chemins perturbés autour de la trajectoire vraie (l'action calculée en direct), double pendule (chaos !), flot hamiltonien dans l'espace des phases.
+- **✅ Fait** (Phase 13) : **principe de moindre action** (`ActionExplorer` : chemin déformable au curseur, action S calculée en direct, minimum sur la parabole) ; leçon L = T − V, Euler-Lagrange, Noether, Feynman-chemins ; p = ∂L/∂v et F = −∂V/∂x par gestes.
+- **✅ aussi** : **double pendule** (`DoublePendulumExplorer` : Lagrange→RK4, jumeau à 10⁻⁵ rad, écart mesuré en direct — l'effet papillon) et **espace des phases** (`PhaseSpaceExplorer` : flot hamiltonien du pendule, clic = trajectoire, séparatrice, Liouville en encadré).
+- **⏳ Suite** : Noether quantitatif, flot du double pendule (sections de Poincaré).
 - **Geste** : dériver les équations du mouvement par manipulation de L.
 
 ---
 
 ## Bloc 4 — Master et au-delà ⏳
 
-### V. Mécanique quantique ⏳
-- **Contenu** : Schrödinger décortiquée (i = rotation de phase — station Q ; le Hamiltonien = conservation de l'énergie ; la courbure de ψ = énergie cinétique), puits infini (modes = corde vibrante de la station O !), superposition, Heisenberg = dualité de Fourier (station O encore), spin et matrices de Pauli (station K).
+### V. Mécanique quantique ✅ (partiel)
+- **✅ Fait** (Phase 14) : Schrödinger décortiquée (i = rotation de phase — station Q ; courbure de ψ = énergie cinétique, ψ″ de sin par gestes), **puits infini** (`QuantumWellExplorer` : Re/Im ψ qui tournent, |ψ|² figé, superposition ψ₁+ψ₂ qui bat — modes = corde vibrante de la station O !), Eₙ = n²E₁ par gestes, **Heisenberg = dualité de Fourier** (leçon complète : de Broglie, paquet d'ondes, pourquoi la matière ne s'effondre pas).
+- **✅ aussi** : **effet tunnel** (`TunnelExplorer` : ψ évanescente e^(−κx) dans la barrière, onde transmise en direct, T ≈ e^(−2κL) ; Soleil, Gamow, STM, mémoire flash) — κ et la loi T′ = T² par gestes.
+- **⏳ Reste** : spin et matrices de Pauli (station K), atome d'hydrogène.
 - **Visuel** : ψ(x,t) animée dans un potentiel (paquet d'ondes, effet tunnel), niveaux d'énergie interactifs.
 - **Moteur** : complexes obligatoires (Q), opérateurs linéaires (K). *La spirale se referme : tout le parcours converge ici.*
 
-### W. Relativité et géométrie de l'espace-temps ⏳ (le vrai « 4D »)
-- **Contenu** : relativité restreinte (diagrammes de Minkowski manipulables — glisser la vitesse, voir la simultanéité basculer), E=mc² par cas limites (station I), tenseurs (le produit qui généralise scalaire et vectoriel), courbure, idée de la relativité générale.
+### W. Relativité et géométrie de l'espace-temps ✅ (partiel — restreinte)
+- **✅ Fait** (Phase 15) : **diagramme de Minkowski manipulable** (`MinkowskiExplorer` : cône de lumière, axes (x′, ct′) en ciseaux au curseur de vitesse, simultanéité qui bascule — Δt′ affiché, hyperbole de calibration) ; leçons intervalle invariant s² = (ct)² − x² et **dilatation du temps** (γ par gestes, muons, GPS, jumeaux) — le tout en canvas 2D, sans Three.js.
+- **⏳ Reste** : E=mc² par cas limites (station I), tenseurs, courbure/relativité générale, tesseract en rotation.
 - **Visuels 4D** : diagrammes d'espace-temps (2D+temps), projection de tesseract en rotation (canvas maison : projeter ℝ⁴→ℝ³→écran, même technique que Surface3D), géodésiques sur surfaces courbes.
 - **Palier technique probable** : Three.js/WebGL à partir d'ici si les scènes se complexifient.
 
@@ -167,10 +179,10 @@ profondeur).
 | 3D canvas maison (projection + painter's algorithm) | Station M : surfaces z=f(x,y) — ~1000 quads, 60 fps garanti sans lib | ✅ |
 | Three.js/WebGL | Scènes 3D complexes (W : espace-temps, champs 3D denses) | ⏳ |
 | Type `Complex` + règles associées dans le moteur | Station Q | ✅ partiel (`i` symbole + cycle iⁿ + Euler ; arithmétique complète ⏳) |
-| Règles de dérivation/intégration symboliques gestuelles | Stations G/H complètes, prérequis U/V | ✅ dérivation + chaîne · ⏳ intégration par parties |
+| Règles de dérivation/intégration symboliques gestuelles | Stations G/H complètes, prérequis U/V | ✅ dérivation + chaîne + parties + substitution linéaire · ⏳ changement de variable général |
 | Objets non numériques (permutations, matrices dans l'AST) | Stations K (manipuler Av=λv), X | ⏳ (K partiel au batch : visuel seulement) |
 | Web Workers pour le CAS | Si une vérification d'équivalence bloque l'UI (> ~50 ms) — pas observé à ce jour | ⏳ |
-| Fluide 2D temps réel (TS pur d'abord) | Station S | ⏳ |
+| Fluide 2D temps réel (TS pur d'abord) | Station S | ✅ (« stable fluids » 64×64, TS pur, 60 fps) |
 | WASM | Uniquement si le fluide S ou les scènes W saturent le TS pur — **toujours pas justifié** | ⏳ |
 | Curve fitting sur données réelles (style Tracker) | Station S (méthode scientifique complète) | ⏳ |
 | Mode « quête » multi-étapes, mode examen | Stations Y, Z | ⏳ |

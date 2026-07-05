@@ -23,6 +23,19 @@ import { RiemannExplorer } from '../Physics/RiemannExplorer';
 import { PoleExplorer } from '../Physics/PoleExplorer';
 import { ComplexExplorer } from '../Physics/ComplexExplorer';
 import { EpicyclesExplorer } from '../Physics/EpicyclesExplorer';
+import { ProbTreeExplorer } from '../Physics/ProbTreeExplorer';
+import { RootsExplorer } from '../Physics/RootsExplorer';
+import { StringExplorer } from '../Physics/StringExplorer';
+import { EMWaveExplorer } from '../Physics/EMWaveExplorer';
+import { DomainColoringExplorer } from '../Physics/DomainColoringExplorer';
+import { RandomWalkExplorer } from '../Physics/RandomWalkExplorer';
+import { ActionExplorer } from '../Physics/ActionExplorer';
+import { FluidExplorer } from '../Physics/FluidExplorer';
+import { QuantumWellExplorer } from '../Physics/QuantumWellExplorer';
+import { DoublePendulumExplorer } from '../Physics/DoublePendulumExplorer';
+import { PhaseSpaceExplorer } from '../Physics/PhaseSpaceExplorer';
+import { TunnelExplorer } from '../Physics/TunnelExplorer';
+import { MinkowskiExplorer } from '../Physics/MinkowskiExplorer';
 import './lesson.css';
 
 interface ExercisePlayerProps {
@@ -147,6 +160,19 @@ export function ExercisePlayer({ exercise, onSuccess }: ExercisePlayerProps) {
       {exercise.sim?.type === 'poles' && <PoleExplorer />}
       {exercise.sim?.type === 'complex' && <ComplexExplorer />}
       {exercise.sim?.type === 'epicycles' && <EpicyclesExplorer />}
+      {exercise.sim?.type === 'prob-tree' && <ProbTreeExplorer />}
+      {exercise.sim?.type === 'roots' && <RootsExplorer />}
+      {exercise.sim?.type === 'string-wave' && <StringExplorer />}
+      {exercise.sim?.type === 'em-wave' && <EMWaveExplorer />}
+      {exercise.sim?.type === 'domain-coloring' && <DomainColoringExplorer />}
+      {exercise.sim?.type === 'random-walk' && <RandomWalkExplorer />}
+      {exercise.sim?.type === 'action' && <ActionExplorer />}
+      {exercise.sim?.type === 'fluid' && <FluidExplorer />}
+      {exercise.sim?.type === 'quantum-well' && <QuantumWellExplorer />}
+      {exercise.sim?.type === 'double-pendulum' && <DoublePendulumExplorer />}
+      {exercise.sim?.type === 'phase-space' && <PhaseSpaceExplorer />}
+      {exercise.sim?.type === 'tunnel' && <TunnelExplorer />}
+      {exercise.sim?.type === 'minkowski' && <MinkowskiExplorer />}
 
       {exercise.free && !solved && (
         <button

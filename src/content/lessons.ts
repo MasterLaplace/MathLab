@@ -3,6 +3,10 @@ import { lessonsPhases6to9 } from './phases678';
 import { lessonsComplements } from './complements';
 import { lessonsPhase11 } from './phase11';
 import { lessonsPhase12 } from './phase12';
+import { lessonsApprofondissements } from './approfondissements';
+import { lessonsHorizons } from './horizons';
+import { lessonsQuantique } from './quantique';
+import { lessonsRelativite } from './relativite';
 
 /** Entier aléatoire dans [min, max]. */
 function rand(min: number, max: number): number {
@@ -616,6 +620,10 @@ export const lessons: Lesson[] = [
   ...lessonsComplements,
   ...lessonsPhase11,
   ...lessonsPhase12,
+  ...lessonsApprofondissements,
+  ...lessonsHorizons,
+  ...lessonsQuantique,
+  ...lessonsRelativite,
 ];
 
 export function lessonById(id: string): Lesson | undefined {

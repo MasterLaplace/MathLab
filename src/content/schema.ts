@@ -39,7 +39,20 @@ export type SimSpec =
   | { type: 'riemann' }
   | { type: 'poles' }
   | { type: 'complex' }
-  | { type: 'epicycles' };
+  | { type: 'epicycles' }
+  | { type: 'prob-tree' }
+  | { type: 'roots' }
+  | { type: 'string-wave' }
+  | { type: 'em-wave' }
+  | { type: 'domain-coloring' }
+  | { type: 'random-walk' }
+  | { type: 'action' }
+  | { type: 'fluid' }
+  | { type: 'quantum-well' }
+  | { type: 'double-pendulum' }
+  | { type: 'phase-space' }
+  | { type: 'tunnel' }
+  | { type: 'minkowski' };
 
 export type SurfaceKind = 'bowl' | 'saddle' | 'wave';
 

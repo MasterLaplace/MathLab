@@ -102,6 +102,23 @@ export const multiplyByZero: Rule = (expr, from) => {
   ];
 };
 
+/** Deux moins font un plus : appuyer sur −(−x) le déplie en x. */
+export const doubleNegate: Rule = (expr, from) => {
+  const node = getAt(expr, from);
+  if (node === undefined || !isCall(node) || node[0] !== 'Negate') return [];
+  const inner = node[1] as Expr;
+  if (!isCall(inner) || inner[0] !== 'Negate') return [];
+  return [
+    {
+      ruleId: 'neg-neg',
+      kind: 'tap',
+      from,
+      label: 'Deux moins font un plus',
+      result: setAt(expr, from, inner[1] as Expr),
+    },
+  ];
+};
+
 /**
  * Annulation additive : dans une somme, glisser `a` sur `-a` (ou l'inverse)
  * fait disparaître les deux — ils s'annulent.
@@ -303,6 +320,7 @@ export const cancelRules: Rule[] = [
   computeNumeric,
   removeNeutral,
   multiplyByZero,
+  doubleNegate,
   cancelAdditivePair,
   combineLikeTerms,
   cancelFractionFactor,

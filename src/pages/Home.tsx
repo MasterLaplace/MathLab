@@ -21,6 +21,9 @@ const PHASE_TITLES: Record<number, string> = {
   10: 'Phase 10 — Le hasard apprivoisé : probabilités',
   11: 'Phase 11 — Le pays de Laplace',
   12: 'Phase 12 — Le plan complexe : la rotation devenue nombre',
+  13: 'Phase 13 — La nature optimise : action, chaos et fluides',
+  14: 'Phase 14 — Le monde quantique : la matière est une onde',
+  15: 'Phase 15 — L’espace-temps : la relativité',
 };
 
 /** Une leçon terminée depuis plus de 3 jours mérite une révision. */

@@ -8,7 +8,9 @@ import type { Move, Rule } from './types';
  */
 
 function dependsOnT(e: Expr): boolean {
-  return freeVariables(e).has('t');
+  // La fonction inconnue y vit dans le temps même si t n'apparaît pas.
+  const vars = freeVariables(e);
+  return vars.has('t') || vars.has('y');
 }
 
 function tap(expr: Expr, from: number[], ruleId: string, label: string, why: string, replacement: Expr): Move {
@@ -35,6 +37,66 @@ export const laplaceRules: Rule[] = [
     if (node === undefined || !isCall(node) || node[0] !== 'LT' || node.length !== 2) return [];
     const body = node[1] as Expr;
     const moves: Move[] = [];
+
+    // ℒ{y} = Y : la fonction inconnue reçoit son nom au pays de s.
+    if (body === 'y') {
+      moves.push(
+        tap(
+          expr,
+          from,
+          'lt-y',
+          'ℒ{y} = Y',
+          'La fonction inconnue y(t) devient une inconnue algébrique Y(s) : c’est elle qu’on isolera avec les gestes de la balance.',
+          'Y',
+        ),
+      );
+      return moves;
+    }
+
+    // ℒ{y′} = s·Y − y₀ : dériver dans le temps, c'est multiplier par s.
+    if (isCall(body) && body[0] === 'D' && body.length === 3 && body[1] === 'y' && body[2] === 't') {
+      moves.push(
+        tap(
+          expr,
+          from,
+          'lt-derive',
+          'ℒ{y′} = s·Y − y₀',
+          'La propriété reine : au pays de s, la dérivée devient une multiplication par s — moins la condition initiale y₀ = y(0), le souvenir du départ.',
+          ['Add', ['Multiply', 's', 'Y'], ['Negate', 'y₀']],
+        ),
+      );
+      return moves;
+    }
+
+    // ℒ{y″} = s²·Y − s·y₀ − v₀ : deux dérivées, deux multiplications par s,
+    // deux souvenirs du départ (position y₀ et vitesse v₀).
+    if (
+      isCall(body) &&
+      body[0] === 'D' &&
+      body.length === 3 &&
+      body[2] === 't' &&
+      isCall(body[1]) &&
+      (body[1] as Expr[])[0] === 'D' &&
+      (body[1] as Expr[])[1] === 'y' &&
+      (body[1] as Expr[])[2] === 't'
+    ) {
+      moves.push(
+        tap(
+          expr,
+          from,
+          'lt-derive2',
+          'ℒ{y″} = s²·Y − s·y₀ − v₀',
+          'Dériver deux fois, c’est multiplier deux fois par s — et chaque étage emporte sa condition initiale : la position y₀ et la vitesse v₀.',
+          [
+            'Add',
+            ['Multiply', ['Power', 's', 2], 'Y'],
+            ['Negate', ['Multiply', 's', 'y₀']],
+            ['Negate', 'v₀'],
+          ],
+        ),
+      );
+      return moves;
+    }
 
     // ℒ{c} = c/s
     if (!dependsOnT(body)) {
@@ -147,9 +209,9 @@ export const laplaceRules: Rule[] = [
         );
       }
 
-      // ℒ⁻¹{c/(s + a)} = c·e^(−a·t)
+      // ℒ⁻¹{c/(s + a)} = c·e^(−a·t) — c numérique ou symbolique (y₀…)
       if (
-        typeof num === 'number' &&
+        (typeof num === 'number' || (typeof num === 'string' && num !== 's')) &&
         isCall(den) &&
         den[0] === 'Add' &&
         den.length === 3 &&
@@ -171,6 +233,46 @@ export const laplaceRules: Rule[] = [
       }
     }
 
+    if (isCall(body) && body[0] === 'Divide') {
+      const num = body[1] as Expr;
+      const den = body[2] as Expr;
+
+      // ℒ⁻¹{s/(s² + ω²)} = cos(ωt), ℒ⁻¹{ω/(s² + ω²)} = sin(ωt)
+      if (
+        isCall(den) &&
+        den[0] === 'Add' &&
+        den.length === 3 &&
+        isCall(den[1]) &&
+        (den[1] as Expr[])[0] === 'Power' &&
+        (den[1] as Expr[])[1] === 's' &&
+        (den[1] as Expr[])[2] === 2 &&
+        typeof den[2] === 'number' &&
+        den[2] > 0
+      ) {
+        const w = Math.sqrt(den[2]);
+        if (Number.isInteger(w)) {
+          const wt: Expr = w === 1 ? 't' : ['Multiply', w, 't'];
+          if (num === 's') {
+            moves.push(
+              tap(expr, from, 'ilt-cos', `ℒ⁻¹{s/(s² + ${w * w})} = cos ${w === 1 ? '' : w}t`, 'Le s au numérateur signe un cosinus : le système part à pleine hauteur et oscille pour toujours — deux pôles sur l’axe imaginaire.', ['Cos', wt]),
+            );
+          }
+          if (num === w) {
+            moves.push(
+              tap(expr, from, 'ilt-sin', `ℒ⁻¹{${w}/(s² + ${w * w})} = sin ${w === 1 ? '' : w}t`, 'Le numérateur constant signe un sinus : le système part de zéro avec de l’élan.', ['Sin', wt]),
+            );
+          }
+        }
+      }
+    }
+
+    // Le signe − traverse ℒ⁻¹ (linéarité, toujours).
+    if (isCall(body) && body[0] === 'Negate') {
+      moves.push(
+        tap(expr, from, 'ilt-neg', 'Le signe − traverse ℒ⁻¹', 'Linéarité : l’opposé d’une transformée est la transformée de l’opposé.', ['Negate', ['ILT', body[1] as Expr]]),
+      );
+    }
+
     // Linéarité : ℒ⁻¹{F + G}
     if (isCall(body) && body[0] === 'Add' && body.length >= 3) {
       moves.push(
@@ -186,6 +288,37 @@ export const laplaceRules: Rule[] = [
     }
 
     return moves;
+  },
+  // ── Décomposition en éléments simples : c/((s+a)(s+b)) se scinde ──
+  (expr, from) => {
+    const node = getAt(expr, from);
+    if (node === undefined || !isCall(node) || node[0] !== 'Divide') return [];
+    const c = node[1];
+    const den = node[2];
+    if (typeof c !== 'number' || !isCall(den) || den[0] !== 'Multiply' || den.length !== 3) return [];
+    const poles: number[] = [];
+    for (const f of den.slice(1) as Expr[]) {
+      if (isCall(f) && f[0] === 'Add' && f.length === 3 && f[1] === 's' && typeof f[2] === 'number') {
+        poles.push(f[2]);
+      }
+    }
+    if (poles.length !== 2 || poles[0] === poles[1]) return [];
+    const [a, b] = poles;
+    const k = c / (b - a);
+    if (!Number.isInteger(k)) return [];
+    const part = (p: number): Expr => ['Divide', Math.abs(k), ['Add', 's', p]];
+    const result: Expr =
+      k > 0 ? ['Add', part(a), ['Negate', part(b)]] : ['Add', part(b), ['Negate', part(a)]];
+    return [
+      tap(
+        expr,
+        from,
+        'partial-fractions',
+        `Éléments simples : ${c}/((s+${a})(s+${b})) = ${Math.abs(k)}/(s+${k > 0 ? a : b}) − ${Math.abs(k)}/(s+${k > 0 ? b : a})`,
+        'Deux pôles collés dans un même dénominateur se séparent en deux fractions à un pôle chacune — et chaque pôle isolé est une ligne de la table.',
+        result,
+      ),
+    ];
   },
 ];
 

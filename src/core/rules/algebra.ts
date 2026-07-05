@@ -134,6 +134,47 @@ export const addFractions: Rule = (expr, from) => {
   return moves;
 };
 
+/**
+ * Multiplier deux fractions : glisser `a/b` sur `c/d` dans un produit
+ * donne `(a·c)/(b·d)` — les hauts ensemble, les bas ensemble. C'est le
+ * geste des probabilités : les branches d'un arbre se multiplient.
+ */
+export const mulFractions: Rule = (expr, from) => {
+  if (from.length === 0) return [];
+  const parentPath = from.slice(0, -1);
+  const parent = getAt(expr, parentPath);
+  if (parent === undefined || !isCall(parent) || parent[0] !== 'Multiply') return [];
+  const index = from[from.length - 1];
+  const source = parent[index] as Expr;
+  if (!isCall(source) || source[0] !== 'Divide') return [];
+  const [, a, b] = source as [string, Expr, Expr];
+
+  const moves: Move[] = [];
+  for (let i = 1; i < parent.length; i++) {
+    if (i === index) continue;
+    const target = parent[i] as Expr;
+    if (!isCall(target) || target[0] !== 'Divide') continue;
+    const [, c, d] = target as [string, Expr, Expr];
+    const merged: Expr = [
+      'Divide',
+      normalize(['Multiply', a, c]),
+      normalize(['Multiply', b, d]),
+    ];
+    let result = setAt(expr, [...parentPath, i], merged);
+    result = removeArgAt(result, from);
+    moves.push({
+      ruleId: 'mul-fractions',
+      kind: 'drag',
+      from,
+      to: [...parentPath, i],
+      label: 'Multiplier des fractions : les hauts ensemble, les bas ensemble',
+      result,
+    });
+    break;
+  }
+  return moves;
+};
+
 /** Base et exposant d'un facteur : `x` → (x, 1) ; `xⁿ` → (x, n). Nombres exclus. */
 function splitFactor(f: Expr): { base: Expr; exp: number } | null {
   if (typeof f === 'number') return null;
@@ -178,4 +219,10 @@ export const combineEqualFactors: Rule = (expr, from) => {
   return moves;
 };
 
-export const algebraRules: Rule[] = [distribute, factorCommon, addFractions, combineEqualFactors];
+export const algebraRules: Rule[] = [
+  distribute,
+  factorCommon,
+  addFractions,
+  mulFractions,
+  combineEqualFactors,
+];
