@@ -4,8 +4,12 @@ import { cancelRules } from './cancel';
 import { complexRules } from './complex';
 import { deriveRules } from './derive';
 import { equalityRules } from './equality';
+import { groupeRules } from './groupes';
 import { integrateRules } from './integrate';
 import { laplaceRules } from './laplace';
+import { matrixRules } from './matrix';
+import { nombresRules } from './nombres';
+import { preuveRules } from './preuves';
 import { trigRules } from './trig';
 import type { Move, Rule } from './types';
 
@@ -20,6 +24,10 @@ const allRules: Rule[] = [
   ...laplaceRules,
   ...complexRules,
   ...trigRules,
+  ...matrixRules,
+  ...nombresRules,
+  ...groupeRules,
+  ...preuveRules,
 ];
 
 /** Toutes les manipulations légales pour le nœud sélectionné. */

@@ -111,6 +111,46 @@ export const complexRules: Rule[] = [
       ),
     ];
   },
+  // Conjugué : z̄ se déplie par gestes — miroir du plan complexe.
+  (expr, from) => {
+    const node = getAt(expr, from);
+    if (node === undefined || !isCall(node) || node[0] !== 'Conj' || node.length !== 2) return [];
+    const z = node[1] as Expr;
+    if (typeof z === 'number') {
+      return [
+        tap(expr, from, 'conj-real', `Un réel est son propre conjugué : ${z}̄ = ${z}`,
+          'Le conjugué est le miroir par rapport à l’axe réel : un point de l’axe ne bouge pas.', z),
+      ];
+    }
+    if (z === 'i') {
+      return [
+        tap(expr, from, 'conj-i', 'ī = −i : le miroir renverse l’axe imaginaire',
+          'Conjuguer, c’est réfléchir par rapport à l’axe réel : i (en haut) devient −i (en bas).', ['Negate', 'i']),
+      ];
+    }
+    if (isCall(z) && z[0] === 'Add') {
+      return [
+        tap(expr, from, 'conj-add', 'Le conjugué d’une somme est la somme des conjugués',
+          'Le miroir réfléchit chaque terme séparément : conj(a + b) = conj(a) + conj(b).',
+          ['Add', ...(z.slice(1) as Expr[]).map((t): Expr => ['Conj', t])]),
+      ];
+    }
+    if (isCall(z) && z[0] === 'Multiply') {
+      return [
+        tap(expr, from, 'conj-mult', 'Le conjugué d’un produit est le produit des conjugués',
+          'Les modules se multiplient et les angles s’additionnent — au miroir, chaque angle change de signe : conj(a·b) = conj(a)·conj(b).',
+          ['Multiply', ...(z.slice(1) as Expr[]).map((f): Expr => ['Conj', f])]),
+      ];
+    }
+    if (isCall(z) && z[0] === 'Negate') {
+      return [
+        tap(expr, from, 'conj-neg', 'Le conjugué traverse le signe moins',
+          'Le miroir de l’opposé est l’opposé du miroir : conj(−u) = −conj(u).',
+          ['Negate', ['Conj', z[1] as Expr]]),
+      ];
+    }
+    return [];
+  },
 ];
 
 /** n·θ, en repliant n dans un éventuel dénominateur : 3·(2π/3) → 2π. */

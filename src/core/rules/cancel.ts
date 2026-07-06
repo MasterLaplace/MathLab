@@ -316,6 +316,64 @@ function splitTerm(t: Expr): { coeff: number; base: Expr | null } | null {
   return null;
 }
 
+/**
+ * Multiplier deux nombres d'un produit mixte : dans `3·i·4`, glisser `3`
+ * sur `4` donne `12·i` — les nombres se regroupent même au milieu des symboles.
+ */
+export const combineNumericFactors: Rule = (expr, from) => {
+  if (from.length === 0) return [];
+  const parentPath = from.slice(0, -1);
+  const parent = getAt(expr, parentPath);
+  if (parent === undefined || !isCall(parent) || parent[0] !== 'Multiply') return [];
+  const index = from[from.length - 1];
+  const source = parent[index];
+  if (typeof source !== 'number') return [];
+
+  const moves: Move[] = [];
+  for (let i = 1; i < parent.length; i++) {
+    if (i === index) continue;
+    const target = parent[i];
+    if (typeof target !== 'number') continue;
+    let result = setAt(expr, [...parentPath, i], tidyNumber(source * target));
+    result = removeArgAt(result, from);
+    moves.push({
+      ruleId: 'combine-numbers',
+      kind: 'drag',
+      from,
+      to: [...parentPath, i],
+      label: 'Multiplier les deux nombres du produit',
+      result,
+    });
+    break;
+  }
+  return moves;
+};
+
+/**
+ * Sortir le signe : un facteur `−u` dans un produit donne son moins au
+ * produit entier — `i·(−i)` devient `−(i·i)`.
+ */
+export const negateOut: Rule = (expr, from) => {
+  if (from.length === 0) return [];
+  const node = getAt(expr, from);
+  const parentPath = from.slice(0, -1);
+  const parent = getAt(expr, parentPath);
+  if (node === undefined || !isCall(node) || node[0] !== 'Negate') return [];
+  if (parent === undefined || !isCall(parent) || parent[0] !== 'Multiply') return [];
+  const index = from[from.length - 1];
+  const factors = parent.slice(1).map((f, k) => (k + 1 === index ? (node[1] as Expr) : (f as Expr)));
+  return [
+    {
+      ruleId: 'negate-out',
+      kind: 'tap',
+      from,
+      label: 'Le signe moins sort du produit',
+      why: 'Multiplier par −u, c’est multiplier par u puis changer le signe : le moins se met en facteur devant tout le produit.',
+      result: setAt(expr, parentPath, ['Negate', normalize(['Multiply', ...factors])]),
+    },
+  ];
+};
+
 export const cancelRules: Rule[] = [
   computeNumeric,
   removeNeutral,
@@ -323,5 +381,7 @@ export const cancelRules: Rule[] = [
   doubleNegate,
   cancelAdditivePair,
   combineLikeTerms,
+  combineNumericFactors,
+  negateOut,
   cancelFractionFactor,
 ];

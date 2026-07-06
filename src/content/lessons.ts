@@ -7,6 +7,11 @@ import { lessonsApprofondissements } from './approfondissements';
 import { lessonsHorizons } from './horizons';
 import { lessonsQuantique } from './quantique';
 import { lessonsRelativite } from './relativite';
+import { lessonsMatrices } from './matrices';
+import { lessonsNombres } from './nombres';
+import { lessonsComplexe } from './complexe';
+import { lessonsGroupes } from './groupes';
+import { lessonsPreuves } from './preuves';
 
 /** Entier aléatoire dans [min, max]. */
 function rand(min: number, max: number): number {
@@ -624,6 +629,11 @@ export const lessons: Lesson[] = [
   ...lessonsHorizons,
   ...lessonsQuantique,
   ...lessonsRelativite,
+  ...lessonsMatrices,
+  ...lessonsNombres,
+  ...lessonsComplexe,
+  ...lessonsGroupes,
+  ...lessonsPreuves,
 ];
 
 export function lessonById(id: string): Lesson | undefined {

@@ -5,6 +5,7 @@
  *   npx tsx scripts/verify-lessons.ts             # toutes les leçons
  *   npx tsx scripts/verify-lessons.ts p11-poles…  # ids ciblés
  */
+import { expeditions } from '../src/content/expeditions';
 import { lessons } from '../src/content/lessons';
 import { legalMoves } from '../src/core/rules';
 import { reachesGoal } from '../src/core/engine';
@@ -55,7 +56,7 @@ for (const lesson of lessons) {
       console.log(`  ~ ${lesson.id}/${ex.id} : exploration libre`);
       continue;
     }
-    const solution = solve(ex.start, ex.goal, ex.strictGoal);
+    const solution = solve(ex.start, ex.goal, ex.strictGoal, ex.depth ?? 8);
     if (solution === null) {
       console.error(`  ✗ ${lesson.id}/${ex.id} : AUCUNE solution par gestes !`);
       fail++;
@@ -75,6 +76,23 @@ for (const lesson of lessons) {
     }
     fail += genFail;
     if (genFail === 0) console.log(`  ✓ ${lesson.id}/generator : 5 tirages OK`);
+  }
+}
+for (const exp of expeditions) {
+  if (wanted.size > 0 && !wanted.has(exp.id)) continue;
+  for (const step of exp.steps) {
+    const ex = step.exercise;
+    if (ex.goal === undefined) {
+      console.log(`  ~ ${exp.id}/${ex.id} : exploration libre`);
+      continue;
+    }
+    const solution = solve(ex.start, ex.goal, ex.strictGoal, ex.depth ?? 8);
+    if (solution === null) {
+      console.error(`  ✗ ${exp.id}/${ex.id} : AUCUNE solution par gestes !`);
+      fail++;
+    } else {
+      console.log(`  ✓ ${exp.id}/${ex.id} : ${solution.length} geste(s)`);
+    }
   }
 }
 console.log(fail === 0 ? '\nTOUS LES EXERCICES SONT RÉSOLUBLES ✓' : `\n${fail} ÉCHEC(S)`);

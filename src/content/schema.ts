@@ -18,8 +18,18 @@ export interface Exercise {
   free?: boolean;
   /** Indice affiché après un geste illégal. */
   hint?: string;
+  /**
+   * Indices progressifs (format expédition) : chaque appui sur « Indice »
+   * révèle le suivant, du coup de pouce à la quasi-solution.
+   */
+  hints?: string[];
   /** Simulation ou visualisation affichée sous l'équation. */
   sim?: SimSpec;
+  /**
+   * Profondeur de recherche pour la vérification headless (défaut 8) :
+   * les exercices longs (produit complexe développé…) l'augmentent.
+   */
+  depth?: number;
 }
 
 export type SimSpec =
@@ -52,7 +62,9 @@ export type SimSpec =
   | { type: 'double-pendulum' }
   | { type: 'phase-space' }
   | { type: 'tunnel' }
-  | { type: 'minkowski' };
+  | { type: 'minkowski' }
+  | { type: 'symmetry' }
+  | { type: 'dominoes' };
 
 export type SurfaceKind = 'bowl' | 'saddle' | 'wave';
 

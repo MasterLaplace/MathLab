@@ -36,11 +36,15 @@ import { DoublePendulumExplorer } from '../Physics/DoublePendulumExplorer';
 import { PhaseSpaceExplorer } from '../Physics/PhaseSpaceExplorer';
 import { TunnelExplorer } from '../Physics/TunnelExplorer';
 import { MinkowskiExplorer } from '../Physics/MinkowskiExplorer';
+import { SymmetryExplorer } from '../Physics/SymmetryExplorer';
+import { DominoesExplorer } from '../Physics/DominoesExplorer';
 import './lesson.css';
 
 interface ExercisePlayerProps {
   exercise: Exercise;
   onSuccess: () => void;
+  /** Mode examen (Défi du jour) : aucun indice, ni bouton ni rattrapage. */
+  exam?: boolean;
 }
 
 interface Step {
@@ -49,14 +53,18 @@ interface Step {
   expr: Expr;
 }
 
-export function ExercisePlayer({ exercise, onSuccess }: ExercisePlayerProps) {
+export function ExercisePlayer({ exercise, onSuccess, exam }: ExercisePlayerProps) {
   const [expr, setExpr] = useState<Expr>(() => normalize(exercise.start));
   const [steps, setSteps] = useState<Step[]>([]);
   const [hint, setHint] = useState<string | null>(null);
   const [solved, setSolved] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
   const [showWhy, setShowWhy] = useState(false);
+  const [hintIndex, setHintIndex] = useState(0);
   const missesRef = useRef(0);
+
+  // Indices progressifs (expéditions) ou indice unique (leçons classiques).
+  const hintList = exercise.hints ?? (exercise.hint ? [exercise.hint] : []);
 
   // Exploration pure : la simulation remplace l'équation.
   const pureExploration = Boolean(exercise.free && exercise.sim);
@@ -70,6 +78,7 @@ export function ExercisePlayer({ exercise, onSuccess }: ExercisePlayerProps) {
     setSteps([]);
     setHint(null);
     setSolved(false);
+    setHintIndex(0);
     missesRef.current = 0;
   }, [exercise]);
 
@@ -108,15 +117,22 @@ export function ExercisePlayer({ exercise, onSuccess }: ExercisePlayerProps) {
   }, [exercise.start]);
 
   const showHint = useCallback(() => {
-    setHint(exercise.hint ?? 'Essaie de glisser un terme vers l’autre côté du signe =.');
-  }, [exercise.hint]);
+    if (hintList.length === 0) {
+      setHint('Essaie de glisser un terme vers l’autre côté du signe =.');
+      return;
+    }
+    // Chaque appui révèle l'indice suivant, jusqu'au dernier.
+    const next = Math.min(hintIndex, hintList.length - 1);
+    setHint(hintList[next]);
+    setHintIndex(next + 1);
+  }, [hintList, hintIndex]);
 
   const onIllegal = useCallback(() => {
     playNope();
     // Le premier raté ne déclenche que le rebond ; l'indice arrive au deuxième.
     missesRef.current += 1;
-    if (missesRef.current >= 2 && exercise.hint) setHint(exercise.hint);
-  }, [exercise.hint]);
+    if (!exam && missesRef.current >= 2 && hintList.length > 0) setHint(hintList[0]);
+  }, [hintList, exam]);
 
   return (
     <div className={`exercise ${solved ? 'exercise-solved' : ''}`}>
@@ -173,6 +189,8 @@ export function ExercisePlayer({ exercise, onSuccess }: ExercisePlayerProps) {
       {exercise.sim?.type === 'phase-space' && <PhaseSpaceExplorer />}
       {exercise.sim?.type === 'tunnel' && <TunnelExplorer />}
       {exercise.sim?.type === 'minkowski' && <MinkowskiExplorer />}
+      {exercise.sim?.type === 'symmetry' && <SymmetryExplorer />}
+      {exercise.sim?.type === 'dominoes' && <DominoesExplorer />}
 
       {exercise.free && !solved && (
         <button
@@ -207,9 +225,10 @@ export function ExercisePlayer({ exercise, onSuccess }: ExercisePlayerProps) {
         <button type="button" className="btn" onClick={restart} disabled={steps.length === 0}>
           ↺ Recommencer
         </button>
-        {!solved && (
+        {!solved && !exam && (
           <button type="button" className="btn" onClick={showHint}>
             💡 Indice
+            {hintList.length > 1 && ` (${Math.min(hintIndex, hintList.length)}/${hintList.length})`}
           </button>
         )}
         {graphable && (

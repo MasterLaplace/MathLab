@@ -3,18 +3,28 @@ import { lessonById } from './content/lessons';
 import { type Theme, applyTheme, loadSoundEnabled, loadTheme, saveSoundEnabled, saveTheme } from './core/prefs';
 import { type Progress, loadProgress, markExerciseDone, resetProgress } from './core/progress';
 import { setSoundEnabled } from './core/sound';
+import { expeditions } from './content/expeditions';
+import { Expedition } from './pages/Expedition';
 import { Home } from './pages/Home';
 import { LessonPage } from './pages/LessonPage';
+import { Quest } from './pages/Quest';
 
 // MathLive est lourd : le Playground est chargé à la demande.
 const Playground = lazy(() => import('./pages/Playground').then((m) => ({ default: m.Playground })));
 
-type Route = { name: 'home' } | { name: 'lesson'; id: string } | { name: 'playground' };
+type Route =
+  | { name: 'home' }
+  | { name: 'lesson'; id: string }
+  | { name: 'playground' }
+  | { name: 'quest' }
+  | { name: 'expedition'; id: string };
 
 function parseHash(): Route {
   const hash = window.location.hash.replace(/^#\/?/, '');
   if (hash === 'playground') return { name: 'playground' };
+  if (hash === 'quest') return { name: 'quest' };
   if (hash.startsWith('lesson/')) return { name: 'lesson', id: hash.slice('lesson/'.length) };
+  if (hash.startsWith('expedition/')) return { name: 'expedition', id: hash.slice('expedition/'.length) };
   return { name: 'home' };
 }
 
@@ -82,6 +92,15 @@ function App() {
         onBack={() => go('/')}
       />
     );
+  } else if (route.name === 'quest') {
+    page = <Quest onBack={() => go('/')} />;
+  } else if (route.name === 'expedition') {
+    const expedition = expeditions.find((e) => e.id === route.id);
+    page = expedition ? (
+      <Expedition key={expedition.id} expedition={expedition} onBack={() => go('/')} />
+    ) : (
+      <p style={{ textAlign: 'center', marginTop: '4rem' }}>Expédition introuvable.</p>
+    );
   } else if (route.name === 'playground') {
     page = (
       <Suspense fallback={<p style={{ textAlign: 'center', marginTop: '4rem' }}>Chargement…</p>}>
@@ -94,6 +113,8 @@ function App() {
         progress={progress}
         onOpenLesson={(id) => go(`/lesson/${id}`)}
         onOpenPlayground={() => go('/playground')}
+        onOpenQuest={() => go('/quest')}
+        onOpenExpedition={(id) => go(`/expedition/${id}`)}
         onResetProgress={() => setProgress(resetProgress())}
       />
     );

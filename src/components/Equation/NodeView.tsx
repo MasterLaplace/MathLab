@@ -290,6 +290,144 @@ export function NodeView({ node, path }: NodeProps): ReactNode {
         </Wrap>
       );
 
+    case 'Mat2':
+      // Matrice 2×2 (ligne par ligne) : grille entre crochets.
+      return (
+        <Wrap path={path} className="eq-matrix">
+          <span className="eq-mat-grid">
+            <span className="eq-mat-cell"><NodeView node={arg(1)} path={sub(1)} /></span>
+            <span className="eq-mat-cell"><NodeView node={arg(2)} path={sub(2)} /></span>
+            <span className="eq-mat-cell"><NodeView node={arg(3)} path={sub(3)} /></span>
+            <span className="eq-mat-cell"><NodeView node={arg(4)} path={sub(4)} /></span>
+          </span>
+        </Wrap>
+      );
+
+    case 'Vec2':
+      // Vecteur colonne.
+      return (
+        <Wrap path={path} className="eq-matrix">
+          <span className="eq-mat-grid eq-vec-grid">
+            <span className="eq-mat-cell"><NodeView node={arg(1)} path={sub(1)} /></span>
+            <span className="eq-mat-cell"><NodeView node={arg(2)} path={sub(2)} /></span>
+          </span>
+        </Wrap>
+      );
+
+    case 'MatVec':
+    case 'MatMul':
+      // Av / AB : simple juxtaposition — le tap sur le nœud entier étale le calcul.
+      return (
+        <Wrap path={path} className="eq-matmul">
+          <NodeView node={arg(1)} path={sub(1)} />
+          <NodeView node={arg(2)} path={sub(2)} />
+        </Wrap>
+      );
+
+    case 'VecScale':
+      return (
+        <Wrap path={path} className="eq-matmul">
+          <NodeView node={arg(1)} path={sub(1)} />
+          <NodeView node={arg(2)} path={sub(2)} />
+        </Wrap>
+      );
+
+    case 'Det':
+      return (
+        <Wrap path={path} className="eq-fn">
+          <span className="eq-fnname">det</span>
+          <NodeView node={arg(1)} path={sub(1)} />
+        </Wrap>
+      );
+
+    case 'Gcd':
+      return (
+        <Wrap path={path} className="eq-fn">
+          <span className="eq-fnname">pgcd</span>
+          <span className="eq-paren">(</span>
+          <NodeView node={arg(1)} path={sub(1)} />
+          <span className="eq-op eq-comma">,</span>
+          <NodeView node={arg(2)} path={sub(2)} />
+          <span className="eq-paren">)</span>
+        </Wrap>
+      );
+
+    case 'Mod':
+      // a mod n — l'arithmétique de l'horloge.
+      return (
+        <Wrap path={path} className="eq-mod">
+          <MaybeParens node={arg(1)} path={sub(1)} />
+          <span className="eq-op eq-modop">mod</span>
+          <NodeView node={arg(2)} path={sub(2)} />
+        </Wrap>
+      );
+
+    case 'Phi':
+      // Indicatrice d'Euler : φ(n).
+      return (
+        <Wrap path={path} className="eq-fn">
+          <span className="eq-fnname">φ</span>
+          <span className="eq-paren">(</span>
+          <NodeView node={arg(1)} path={sub(1)} />
+          <span className="eq-paren">)</span>
+        </Wrap>
+      );
+
+    case 'Conj':
+      // Conjugué complexe : barre au-dessus.
+      return (
+        <Wrap path={path} className="eq-conj">
+          <span className="eq-conj-inner">
+            <NodeView node={arg(1)} path={sub(1)} />
+          </span>
+        </Wrap>
+      );
+
+    case 'Compose': {
+      // Composition de symétries : a ∘ b (b s'applique d'abord).
+      const parts: ReactNode[] = [];
+      for (let i = 1; i < node.length; i++) {
+        if (i > 1) {
+          parts.push(
+            <span key={`op${i}`} className="eq-op eq-compose-op">
+              ∘
+            </span>,
+          );
+        }
+        parts.push(<NodeView key={i} node={arg(i)} path={sub(i)} />);
+      }
+      return (
+        <Wrap path={path} className="eq-compose">
+          {parts}
+        </Wrap>
+      );
+    }
+
+    case 'Subst':
+      // Substitution : corps |_{v = valeur}.
+      return (
+        <Wrap path={path} className="eq-subst">
+          <span className="eq-subst-body">
+            <NodeView node={arg(1)} path={sub(1)} />
+          </span>
+          <span className="eq-subst-bar">|</span>
+          <sub className="eq-subst-sub">
+            <NodeView node={arg(2)} path={sub(2)} />
+            <span className="eq-subst-eq">=</span>
+            <NodeView node={arg(3)} path={sub(3)} />
+          </sub>
+        </Wrap>
+      );
+
+    case 'Inv':
+      // Inverse d'une symétrie : g⁻¹.
+      return (
+        <Wrap path={path} className="eq-power">
+          <MaybeParensInv node={arg(1)} path={sub(1)} />
+          <sup className="eq-exponent">−1</sup>
+        </Wrap>
+      );
+
     default:
       return (
         <Wrap path={path} className="eq-fn">
@@ -325,6 +463,18 @@ const FN_NAMES: Record<string, string> = {
   Arctan: 'arctan',
 };
 
+/** L'argument d'un Inv est parenthésé s'il est composé (a ∘ b)⁻¹. */
+function MaybeParensInv({ node, path }: NodeProps) {
+  if (!isCall(node)) return <NodeView node={node} path={path} />;
+  return (
+    <span className="eq-parens">
+      <span className="eq-paren">(</span>
+      <NodeView node={node} path={path} />
+      <span className="eq-paren">)</span>
+    </span>
+  );
+}
+
 const GREEK: Record<string, string> = {
   pi: 'π',
   theta: 'θ',
@@ -333,6 +483,15 @@ const GREEK: Record<string, string> = {
   omega: 'ω',
   lambda: 'λ',
   Delta: 'Δ',
+  // Les 8 symétries du carré (groupe D₄).
+  idS: '𝟙',
+  r90: 'r',
+  r180: 'r²',
+  r270: 'r³',
+  sH: 'h',
+  sV: 'v',
+  sD: 'd',
+  sA: 'd′',
 };
 function prettySymbol(s: string): string {
   return GREEK[s] ?? s;

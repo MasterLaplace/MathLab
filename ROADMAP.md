@@ -72,10 +72,11 @@ profondeur).
 - **Geste/visuel** : `VectorsExplorer` — on attrape l'extrémité des flèches, la somme suit en direct.
 - **⏳ Suite** : produit scalaire = projection (visuel ombre), produit vectoriel en 3D (via Surface3D ou successeur).
 
-### K. Algèbre linéaire : les matrices transforment le plan ✅ (partiel)
+### K. Algèbre linéaire : les matrices transforment le plan ✅ (gestes complets 2×2)
 - **Contenu** : matrice 2×2 = transformation du plan (style 3Blue1Brown), déterminant = facteur d'aire (négatif = retournement), matrice inverse = « défaire », vecteurs propres = directions qui ne tournent pas, valeurs propres.
 - **Geste/visuel** : `MatrixExplorer` — glisser les images de î et ĵ, la grille suit ; det et directions propres affichés en direct.
-- **⏳ Suite** : produit de matrices = composition (deux transformations enchaînées), systèmes linéaires 2×2 par gestes, changement de base, matrices 3×3 en 3D, SVD visuel (rotation·étirement·rotation).
+- **✅ aussi (batch 9)** : **les matrices sont dans l'AST** (`rules/matrix.ts` : `Mat2`/`Vec2` rendus en vraie notation matricielle) — Av par « ligne × colonne » en un tap puis calcul par gestes, Iv = v, produit AB = composition (AB ≠ BA *prouvé* par l'élève sur cisaillement/rotation), det déplié en ad − bc, **Av = λv vérifié des deux côtés par gestes** (4 leçons Phase 7). Le palier « objets non numériques » est ouvert.
+- **⏳ Suite** : systèmes linéaires 2×2 par gestes, matrice inverse dans l'AST, changement de base, matrices 3×3 en 3D, SVD visuel (rotation·étirement·rotation).
 
 ### L. Équations différentielles ✅ (partiel)
 - **Contenu fait** : oscillateur x''=−(k/m)x simulé (ressort, curseurs k/m, trace x(t)).
@@ -145,29 +146,38 @@ profondeur).
 ### V. Mécanique quantique ✅ (partiel)
 - **✅ Fait** (Phase 14) : Schrödinger décortiquée (i = rotation de phase — station Q ; courbure de ψ = énergie cinétique, ψ″ de sin par gestes), **puits infini** (`QuantumWellExplorer` : Re/Im ψ qui tournent, |ψ|² figé, superposition ψ₁+ψ₂ qui bat — modes = corde vibrante de la station O !), Eₙ = n²E₁ par gestes, **Heisenberg = dualité de Fourier** (leçon complète : de Broglie, paquet d'ondes, pourquoi la matière ne s'effondre pas).
 - **✅ aussi** : **effet tunnel** (`TunnelExplorer` : ψ évanescente e^(−κx) dans la barrière, onde transmise en direct, T ≈ e^(−2κL) ; Soleil, Gamow, STM, mémoire flash) — κ et la loi T′ = T² par gestes.
-- **⏳ Reste** : spin et matrices de Pauli (station K), atome d'hydrogène.
+- **✅ aussi (batch 9)** : **le spin en 2×2** (leçon `p14-spin` : σx retourne le spin par produit matrice-vecteur, σx² = I par produit de matrices, superposition (1,1) vérifiée vecteur propre — Stern-Gerlach en story, qubit/porte NOT en encadré). La station K devient de la quantique, telle quelle.
+- **✅ aussi (batch 14)** : **σy, la Pauli imaginaire** (leçon `p14-spin-y` : σy|↑⟩ = i|↓⟩ par gestes — i entre dans les matrices ; det σy = −1 ; (1, i) vérifié état propre — « la quantique ne PEUT PAS s'écrire sans les complexes »).
+- **⏳ Reste** : σxσy = iσz (l'algèbre de Pauli complète), atome d'hydrogène.
 - **Visuel** : ψ(x,t) animée dans un potentiel (paquet d'ondes, effet tunnel), niveaux d'énergie interactifs.
 - **Moteur** : complexes obligatoires (Q), opérateurs linéaires (K). *La spirale se referme : tout le parcours converge ici.*
 
 ### W. Relativité et géométrie de l'espace-temps ✅ (partiel — restreinte)
 - **✅ Fait** (Phase 15) : **diagramme de Minkowski manipulable** (`MinkowskiExplorer` : cône de lumière, axes (x′, ct′) en ciseaux au curseur de vitesse, simultanéité qui bascule — Δt′ affiché, hyperbole de calibration) ; leçons intervalle invariant s² = (ct)² − x² et **dilatation du temps** (γ par gestes, muons, GPS, jumeaux) — le tout en canvas 2D, sans Three.js.
+- **✅ aussi (batch 9)** : **le boost de Lorentz est une matrice** (leçon `p15-lorentz` : (ct, x) = (5, 3) → (4, 0) par gestes — l'intervalle s = 4 retrouvé comme temps propre ; det(boost) = 1 calculé, rotation hyperbolique en cours). Les stations K et W se referment l'une sur l'autre.
 - **⏳ Reste** : E=mc² par cas limites (station I), tenseurs, courbure/relativité générale, tesseract en rotation.
 - **Visuels 4D** : diagrammes d'espace-temps (2D+temps), projection de tesseract en rotation (canvas maison : projeter ℝ⁴→ℝ³→écran, même technique que Surface3D), géodésiques sur surfaces courbes.
 - **Palier technique probable** : Three.js/WebGL à partir d'ici si les scènes se complexifient.
 
-### X. Les structures : algèbre abstraite, topologie, preuves ⏳
-- **Contenu** : théorie des groupes (symétries du carré manipulables — composer deux rotations *avec les mains*), groupes = solutions d'équations (Galois raconté), topologie (le café et le donut, caractéristique d'Euler sur polyèdres manipulables), l'art de la preuve (récurrence, absurde, tiroirs) avec vérification par gestes.
-- **Geste** : composer des symétries, construire des tables de Cayley.
-- **Moteur** : objets non numériques (permutations, symétries) — extension du type `Expr`.
+### X. Les structures : algèbre abstraite, topologie, preuves ✅ (les groupes existent)
+- **✅ Fait (batch 12, Phase 17)** : **le groupe D₄ dans l'AST** (`rules/groupes.ts` : les 8 symétries du carré sont des symboles, `['Compose', a, b]` se réduit d'un tap par la table de Cayley calculée en forme normale r^k·f — impossible de se tromper ; `['Inv', g]` + la règle chaussettes-chaussures (a∘b)⁻¹ = b⁻¹∘a⁻¹) ; **`SymmetryExplorer`** (carré aux coins colorés, boutons r/h/v/d/d′, la composition s'écrit en direct) ; 4 leçons : les 8 symétries, **la non-commutativité prouvée à la main** (r∘h = d ≠ d′ = h∘r), les inverses, le sous-groupe de Klein + Lagrange en encadré (relié à Fermat, Phase 16). Galois en story.
+- **⏳ Reste** : groupes = solutions d'équations (Galois quantitatif), permutations en notation cyclique, topologie (Euler sur polyèdres). (L'art de la preuve — récurrence/absurde/tiroirs par gestes — ✅ livré en batch 16, Phase 18.)
+- **Geste** : ✅ composer des symétries, table de Cayley vécue par taps.
+- **Moteur** : ✅ objets non numériques (symétries) — les matrices (batch 9) et D₄ (batch 12) partagent le même palier.
 
-### Y. Théorie des nombres et combinatoire ⏳ (l'entraînement olympiades)
-- **Contenu** : arithmétique modulaire (l'horloge), Fermat/Euler, RSA décortiqué (les maths qui protègent tes messages), comptage fin, récurrences, fonctions génératrices (les séries qui comptent), principe des tiroirs niveau compétition.
-- **Format nouveau** : problèmes ouverts multi-étapes avec indices progressifs (pas un unique `goal` — un mode « quête »).
+### Y. Théorie des nombres et combinatoire ✅ (partiel — l'entraînement olympiades commence)
+- **✅ Fait (batch 10, Phase 16)** : **l'algorithme d'Euclide par taps** (`rules/nombres.ts` : chaque tap = un pas pgcd(a,b) → pgcd(b, reste), le pire cas Fibonacci vécu en 6 gestes, Lamé en encadré) ; **l'arithmétique de l'horloge** (`Mod` dans l'AST, réduction en chemin « réduire d'abord, calculer petit » — jamais dans un exposant) ; **le petit théorème de Fermat** (cycles des puissances, a^(p−1) ≡ 1 vérifié) ; **RSA décortiqué de bout en bout** (n = 15, e = d = 3 : clés vérifiées, message 2 chiffré en 8, déchiffré en 2 — par gestes ; GCHQ en story).
+- **✅ aussi (batch 13)** : **la fonction φ d'Euler par gestes** (`['Phi', n]` : φ(p) = p−1, φ(p^k) = p^k − p^{k−1}, multiplicativité en un tap — φ(15) = 8 relie enfin RSA à sa source, restes chinois en encadré) ; **l'inverse modulaire** (leçon Bézout : remontée d'Euclide en exemple travaillé, vérifications 5·17 ≡ 1 (mod 21), chiffre affine des espions par gestes).
+- **⏳ Reste** : Bézout interactif (remonter Euclide par gestes), comptage fin, récurrences, fonctions génératrices, principe des tiroirs niveau compétition.
+- **Format nouveau** : ✅ **les expéditions** (batch 15) — problèmes rédigés multi-étapes à indices progressifs (voir Z).
 
-### Z. Le sommet : problèmes de niveau HLE ⏳
+### Z. Le sommet : problèmes de niveau HLE ✅ (le mode examen existe)
+- **✅ Fait (batch 11)** : **le Défi du jour** (`pages/Quest.tsx` + `core/quest.ts`) — 5 exercices tirés déterministiquement (même jour = même défi) dans **tout le parcours**, un par phase, **mode examen sans indices**, chrono, série de jours consécutifs + record en localStorage. La révision espacée à l'échelle du curriculum entier est en place.
 - **Contenu** : problèmes multi-domaines de niveau expert mêlant les stations (ex. : une intégrale qui demande résidus (Q) + symétrie (X) ; une question de physique demandant Lagrangien (U) + analyse dimensionnelle (I)). Générateur de « défis du jour » tirant dans tout le curriculum (révision espacée à l'échelle du parcours entier).
 - **Critère de réussite** : prendre une vraie question publique du HLE (maths/physique) et disposer, dans l'app, de toutes les stations nécessaires pour la comprendre *et* la résoudre.
-- **Format** : mode examen (sans indices), rédaction de preuves assistée, auto-évaluation.
+- **✅ aussi (batch 15)** : **les expéditions** (`content/expeditions.ts` + `pages/Expedition.tsx`) — problèmes **rédigés multi-étapes** avec récit, indices **progressifs** (du coup de pouce à la quasi-solution, champ `hints[]` sur `Exercise`) et épilogue. Trois expéditions : 🕵️ *L'interception* (casser RSA-15 : φ par gestes → clé privée → déchiffrement), 🌉 *Le pont qui oscille* (EDO du 2ᵉ ordre de bout en bout : ℒ{y″} → table inverse → éléments simples — physique + Laplace), 🌀 *Deux visages de la rotation* (R·(2,1) et i·(2+i) donnent le même point : matrices ↔ complexes prouvé à la main).
+- **✅ aussi (batch 16)** : **l'art de la preuve** (`content/preuves.ts` + `core/rules/preuves.ts`, Phase 18) — les trois grandes techniques ramenées à leur unique geste mécanique, la **substitution** (`['Subst', corps, variable, valeur]`, tête opaque) : **récurrence** (les dominos — instancier P(1), injecter l'hypothèse P(k) ; sim `DominoesExplorer`), **absurde** (√2 irrationnel : injecter a = 2c dans a² fait surgir la contradiction), **tiroirs** (le pourquoi des collisions modulaires). Premier pas vers la rédaction : « supposons P(k) » = « écris l'hypothèse à la place ».
+- **Format** : ✅ mode examen (sans indices — le Défi du jour) · ✅ problèmes multi-domaines rédigés à indices progressifs (les expéditions) · ✅ techniques de preuve par gestes (récurrence/absurde/tiroirs) · ⏳ rédaction libre assistée, auto-évaluation.
 
 ---
 
@@ -178,14 +188,14 @@ profondeur).
 | Cours riches + KaTeX effectif (`CourseBlock`, `CourseView`) | Stations I+ : impossible d'écrire un vrai cours en `string[]` | ✅ |
 | 3D canvas maison (projection + painter's algorithm) | Station M : surfaces z=f(x,y) — ~1000 quads, 60 fps garanti sans lib | ✅ |
 | Three.js/WebGL | Scènes 3D complexes (W : espace-temps, champs 3D denses) | ⏳ |
-| Type `Complex` + règles associées dans le moteur | Station Q | ✅ partiel (`i` symbole + cycle iⁿ + Euler ; arithmétique complète ⏳) |
+| Type `Complex` + règles associées dans le moteur | Station Q | ✅ (`i` + cycle iⁿ + Euler + produit (a+bi)(c+di) par gestes + conjugué `Conj` + module z·z̄ — batch 14) |
 | Règles de dérivation/intégration symboliques gestuelles | Stations G/H complètes, prérequis U/V | ✅ dérivation + chaîne + parties + substitution linéaire · ⏳ changement de variable général |
-| Objets non numériques (permutations, matrices dans l'AST) | Stations K (manipuler Av=λv), X | ⏳ (K partiel au batch : visuel seulement) |
+| Objets non numériques (permutations, matrices dans l'AST) | Stations K (manipuler Av=λv), X | ✅ matrices (`Mat2`/`Vec2`, batch 9) · ✅ symétries D₄ (`Compose`/`Inv`, batch 12) |
 | Web Workers pour le CAS | Si une vérification d'équivalence bloque l'UI (> ~50 ms) — pas observé à ce jour | ⏳ |
 | Fluide 2D temps réel (TS pur d'abord) | Station S | ✅ (« stable fluids » 64×64, TS pur, 60 fps) |
 | WASM | Uniquement si le fluide S ou les scènes W saturent le TS pur — **toujours pas justifié** | ⏳ |
 | Curve fitting sur données réelles (style Tracker) | Station S (méthode scientifique complète) | ⏳ |
-| Mode « quête » multi-étapes, mode examen | Stations Y, Z | ⏳ |
+| Mode « quête » multi-étapes, mode examen | Stations Y, Z | ✅ mode examen (Défi du jour, batch 11) · ✅ expéditions à indices progressifs (batch 15) · ✅ techniques de preuve par gestes (`Subst`, batch 16) |
 
 ## Principes pédagogiques permanents
 

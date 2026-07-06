@@ -5,6 +5,7 @@
  *   npx tsx scripts/verify-latex.ts
  */
 import katex from 'katex';
+import { expeditions } from '../src/content/expeditions';
 import { lessons } from '../src/content/lessons';
 import type { CourseBlock } from '../src/content/schema';
 
@@ -37,6 +38,11 @@ for (const lesson of lessons) {
     }
     if (block.kind === 'example') for (const s of block.steps) checkText(s, where);
   }
+}
+for (const exp of expeditions) {
+  for (const [i, p] of exp.story.entries()) checkText(p, `${exp.id}/story[${i}]`);
+  for (const [i, step] of exp.steps.entries()) checkText(step.intro, `${exp.id}/step[${i}]`);
+  checkText(exp.epilogue, `${exp.id}/epilogue`);
 }
 console.log(fail === 0 ? `${count} extraits LaTeX valides ✓` : `${fail}/${count} extraits en erreur`);
 process.exit(fail === 0 ? 0 : 1);

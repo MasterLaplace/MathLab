@@ -44,7 +44,9 @@ export function reachesGoal(current: Expr, goal: Expr, strict = false): boolean 
   return false;
 }
 
-const OPAQUE_HEADS = ['D', 'Int', 'LT', 'ILT'];
+// Les têtes matricielles et arithmétiques (Gcd, Mod) sont opaques aussi :
+// le CAS ne doit ni les évaluer ni s'y étouffer — tout passe par les gestes.
+const OPAQUE_HEADS = ['D', 'Int', 'LT', 'ILT', 'Mat2', 'Vec2', 'MatVec', 'MatMul', 'Det', 'VecScale', 'Gcd', 'Mod', 'Phi', 'Conj', 'Compose', 'Inv', 'Subst'];
 
 function containsHead(e: Expr, h: string): boolean {
   if (!isCall(e)) return false;

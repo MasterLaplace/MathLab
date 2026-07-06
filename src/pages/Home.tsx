@@ -1,10 +1,14 @@
+import { expeditions } from '../content/expeditions';
 import { lessons } from '../content/lessons';
+import { loadExpeditionsDone } from '../core/expedition';
 import type { Progress } from '../core/progress';
 
 interface HomeProps {
   progress: Progress;
   onOpenLesson: (id: string) => void;
   onOpenPlayground: () => void;
+  onOpenQuest: () => void;
+  onOpenExpedition: (id: string) => void;
   onResetProgress: () => void;
 }
 
@@ -24,6 +28,9 @@ const PHASE_TITLES: Record<number, string> = {
   13: 'Phase 13 — La nature optimise : action, chaos et fluides',
   14: 'Phase 14 — Le monde quantique : la matière est une onde',
   15: 'Phase 15 — L’espace-temps : la relativité',
+  16: 'Phase 16 — Les nombres entiers : l’arithmétique secrète',
+  17: 'Phase 17 — La symétrie devient calcul : les groupes',
+  18: 'Phase 18 — L’art de la preuve : récurrence, absurde, tiroirs',
 };
 
 /** Une leçon terminée depuis plus de 3 jours mérite une révision. */
@@ -34,9 +41,10 @@ function needsReview(completedAt?: string): boolean {
   return Date.now() - new Date(completedAt).getTime() > REVIEW_AFTER_MS;
 }
 
-export function Home({ progress, onOpenLesson, onOpenPlayground, onResetProgress }: HomeProps) {
+export function Home({ progress, onOpenLesson, onOpenPlayground, onOpenQuest, onOpenExpedition, onResetProgress }: HomeProps) {
   const phases = [...new Set(lessons.map((l) => l.phase))].sort((a, b) => a - b);
   const doneCount = lessons.filter((l) => progress.lessons[l.id]?.completed).length;
+  const expeditionsDone = loadExpeditionsDone();
 
   return (
     <div className="page home-page">
@@ -87,11 +95,41 @@ export function Home({ progress, onOpenLesson, onOpenPlayground, onResetProgress
       ))}
 
       <section className="home-phase">
+        <h2>Expéditions — problèmes multi-étapes</h2>
+        <div className="lesson-grid">
+          {expeditions.map((exp) => {
+            const done = expeditionsDone.has(exp.id);
+            return (
+              <button
+                type="button"
+                key={exp.id}
+                className={`lesson-card ${done ? 'lesson-card-done' : ''}`}
+                onClick={() => onOpenExpedition(exp.id)}
+              >
+                <span className="lesson-card-status">{done ? '✓' : '○'}</span>
+                <span className="lesson-card-title">
+                  {exp.emoji} {exp.title}
+                </span>
+                <span className="lesson-card-tagline">{exp.tagline}</span>
+                <span className="lesson-card-count">{exp.steps.length} étapes · indices progressifs</span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="home-phase">
         <h2>Terrain de jeu</h2>
-        <button type="button" className="lesson-card lesson-card-playground" onClick={onOpenPlayground}>
-          <span className="lesson-card-title">🧪 Playground</span>
-          <span className="lesson-card-tagline">Manipule librement n’importe quelle équation</span>
-        </button>
+        <div className="lesson-grid">
+          <button type="button" className="lesson-card lesson-card-playground" onClick={onOpenQuest}>
+            <span className="lesson-card-title">⚔️ Défi du jour</span>
+            <span className="lesson-card-tagline">5 exercices tirés dans tout le parcours — mode examen, sans indices</span>
+          </button>
+          <button type="button" className="lesson-card lesson-card-playground" onClick={onOpenPlayground}>
+            <span className="lesson-card-title">🧪 Playground</span>
+            <span className="lesson-card-tagline">Manipule librement n’importe quelle équation</span>
+          </button>
+        </div>
       </section>
 
       {doneCount > 0 && (

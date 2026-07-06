@@ -144,6 +144,42 @@
 .eq-ddx { font-size: 0.8em; font-style: italic; }
 .eq-ddx .eq-numerator, .eq-ddx .eq-denominator { padding: 0 0.15em; }
 
+/* --- Matrices et vecteurs --- */
+.eq-matrix { display: inline-flex; align-items: center; margin: 0 0.08em; }
+.eq-mat-grid {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  gap: 0.05em 0.45em;
+  align-items: center;
+  justify-items: center;
+  padding: 0.12em 0.3em;
+  border-left: 0.09em solid currentColor;
+  border-right: 0.09em solid currentColor;
+  border-radius: 0.45em;
+  font-size: 0.92em;
+}
+.eq-vec-grid { grid-template-columns: auto; }
+.eq-mat-cell { display: inline-flex; justify-content: center; }
+.eq-matmul { display: inline-flex; align-items: center; gap: 0.12em; }
+.eq-comma { margin: 0 0.12em 0 0; }
+.eq-modop { font-style: normal; font-size: 0.85em; }
+
+/* --- Groupes et conjugué --- */
+.eq-compose { display: inline-flex; align-items: baseline; }
+.eq-compose-op { margin: 0 0.18em; font-style: normal; }
+.eq-conj { display: inline-flex; }
+.eq-conj-inner {
+  display: inline-flex;
+  border-top: 0.09em solid currentColor;
+  padding: 0.08em 0.12em 0;
+}
+
+/* --- Substitution (preuves) --- */
+.eq-subst { display: inline-flex; align-items: baseline; }
+.eq-subst-bar { margin-left: 0.12em; font-size: 1.1em; }
+.eq-subst-sub { font-size: 0.7em; display: inline-flex; align-items: baseline; }
+.eq-subst-eq { margin: 0 0.1em; }
+
 /* --- Intégrale et Laplace --- */
 .eq-integral { display: inline-flex; align-items: center; gap: 0.1em; }
 .eq-int-sign { font-size: 1.5em; line-height: 1; margin-right: 0.05em; }
