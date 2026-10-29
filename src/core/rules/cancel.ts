@@ -21,22 +21,65 @@ export const computeNumeric: Rule = (expr, from) => {
   const node = getAt(expr, from);
   if (node === undefined || !isCall(node)) return [];
   const value = evalNumeric(node);
+  if (value === undefined) return [];
   // On ne propose le calcul que si le résultat est « propre » (entier ou
   // deux décimales) : ln 5 doit rester ln 5, une forme exacte.
-  if (value === undefined || !isNice(value)) return [];
+  if (isNice(value)) {
+    return [
+      {
+        ruleId: 'compute',
+        kind: 'tap',
+        from,
+        label: 'Calculer',
+        result: setAt(expr, from, tidyNumber(value)),
+      },
+    ];
+  }
+  // Un quotient de deux décimaux propres (0,25 / 0,75) se simplifie en
+  // fraction irréductible exacte (1/3) plutôt qu'en 0,333… — exact avant
+  // approché. Seul un Divide est concerné : 1/2 + 1/3 reste un exercice.
+  const fraction = exactQuotient(node);
+  if (fraction === null) return [];
   return [
     {
       ruleId: 'compute',
       kind: 'tap',
       from,
-      label: 'Calculer',
-      result: setAt(expr, from, tidyNumber(value)),
+      label: 'Calculer : la fraction exacte, simplifiée',
+      result: setAt(expr, from, fraction),
     },
   ];
 };
 
 function isNice(n: number): boolean {
   return Math.abs(tidyNumber(n) * 100 - Math.round(tidyNumber(n) * 100)) < 1e-9;
+}
+
+function gcdInt(a: number, b: number): number {
+  a = Math.abs(a);
+  b = Math.abs(b);
+  while (b) [a, b] = [b, a % b];
+  return a;
+}
+
+/** a/b avec a, b décimaux propres → fraction irréductible p/q, si elle diffère du nœud. */
+function exactQuotient(node: Expr): Expr | null {
+  if (!isCall(node) || node[0] !== 'Divide' || node.length !== 3) return null;
+  const a = evalNumeric(node[1] as Expr);
+  const b = evalNumeric(node[2] as Expr);
+  if (a === undefined || b === undefined || b === 0 || !isNice(a) || !isNice(b)) return null;
+  let p = Math.round(tidyNumber(a) * 100);
+  let q = Math.round(tidyNumber(b) * 100);
+  const g = gcdInt(p, q);
+  p /= g;
+  q /= g;
+  if (q < 0) {
+    p = -p;
+    q = -q;
+  }
+  if (q === 1 || q > 10000) return null;
+  const reduced: Expr = p < 0 ? ['Negate', ['Divide', -p, q]] : ['Divide', p, q];
+  return sameExpr(reduced, node) ? null : reduced;
 }
 
 /** Retirer un élément neutre : `x + 0` → `x`, `x × 1` → `x`, `x ÷ 1` → `x`, `x¹` → `x`. */

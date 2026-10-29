@@ -1,18 +1,25 @@
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import { useState } from 'react';
 import type { CourseBlock } from '../../content/schema';
+import { SimView } from './SimView';
 import './course.css';
 
 function renderLatex(latex: string, displayMode: boolean): string {
   return katex.renderToString(latex, { displayMode, throwOnError: false, output: 'html' });
 }
 
-/** `**gras**` → <strong> dans un segment de texte brut. */
+/** `**gras**` → <strong>, puis `*italique*` → <em>, dans un segment de texte brut. */
 function boldSpans(text: string, keyBase: string) {
   const parts = text.split(/\*\*([^*]+)\*\*/g);
   return parts.map((part, i) =>
-    i % 2 === 1 ? <strong key={`${keyBase}-${i}`}>{part}</strong> : part,
+    i % 2 === 1 ? <strong key={`${keyBase}-${i}`}>{part}</strong> : italicSpans(part, `${keyBase}-${i}`),
   );
+}
+
+function italicSpans(text: string, keyBase: string) {
+  const parts = text.split(/\*([^*\n]+)\*/g);
+  return parts.map((part, i) => (i % 2 === 1 ? <em key={`${keyBase}-${i}`}>{part}</em> : part));
 }
 
 /**
@@ -38,7 +45,54 @@ const CALLOUT_META = {
   idea: { icon: '💡', label: 'Intuition' },
   warn: { icon: '⚠️', label: 'Piège classique' },
   story: { icon: '📜', label: 'Histoire' },
+  analogy: { icon: '🎭', label: 'Analogie' },
 } as const;
+
+/**
+ * « Devine d'abord » : l'élève s'engage sur une réponse avant la
+ * révélation. Une mauvaise réponse n'est jamais rouge : elle débloque
+ * l'explication, exactement comme une bonne.
+ */
+function PredictBlock({ block }: { block: Extract<CourseBlock, { kind: 'predict' }> }) {
+  const [chosen, setChosen] = useState<number | null>(null);
+  const revealed = chosen !== null;
+  return (
+    <div className="course-predict">
+      <span className="course-predict-label">🤔 Devine d’abord</span>
+      <p className="course-predict-q">
+        <MathText text={block.question} />
+      </p>
+      <div className="course-predict-choices">
+        {block.choices.map((choice, i) => {
+          const state = !revealed
+            ? ''
+            : i === block.answer
+              ? 'course-predict-right'
+              : i === chosen
+                ? 'course-predict-tried'
+                : 'course-predict-other';
+          return (
+            <button
+              type="button"
+              key={i}
+              className={`course-predict-choice ${state}`}
+              disabled={revealed}
+              onClick={() => setChosen(i)}
+            >
+              <MathText text={choice} />
+            </button>
+          );
+        })}
+      </div>
+      {revealed && (
+        <p className="course-predict-explain">
+          <strong>{chosen === block.answer ? 'Bien vu ! ' : 'Intéressant — et c’est justement le piège. '}</strong>
+          <MathText text={block.explain} />
+        </p>
+      )}
+    </div>
+  );
+}
 
 /** Rend le cours riche d'une leçon (paragraphes, équations, exemples, encadrés). */
 export function CourseView({ blocks }: { blocks: CourseBlock[] }) {
@@ -79,6 +133,19 @@ export function CourseView({ blocks }: { blocks: CourseBlock[] }) {
                 </ol>
               </div>
             );
+          case 'sim':
+            return (
+              <figure key={i} className="course-sim">
+                <SimView sim={block.sim} />
+                {block.caption && (
+                  <figcaption>
+                    <MathText text={block.caption} />
+                  </figcaption>
+                )}
+              </figure>
+            );
+          case 'predict':
+            return <PredictBlock key={i} block={block} />;
           case 'callout': {
             const meta = CALLOUT_META[block.tone];
             return (

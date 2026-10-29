@@ -345,6 +345,9 @@ export const lessonsPhase12: Lesson[] = [
           'Richard Feynman, qui l’avait notée dans son cahier à 14 ans, l’appelait « la formule la plus remarquable des mathématiques ». ' +
           'Elle dit simplement ceci : si tu marches un demi-tour ($\\pi$) sur le cercle ($e^{i\\theta}$), tu arrives à l’opposé de ton départ ($-1$).',
       },
+      { kind: 'p', text: 'D’où vient la formule ? Des **séries de Taylor** (Phase 19). Remplace $x$ par $i\\theta$ dans $e^x = 1 + x + \\frac{x^2}{2!} + \\frac{x^3}{3!} + \\dots$ et laisse les puissances de $i$ tourner : $i^2 = -1$, $i^3 = -i$, $i^4 = 1$.' },
+      { kind: 'math', latex: 'e^{i\\theta} = \\underbrace{\\left(1 - \\frac{\\theta^2}{2!} + \\frac{\\theta^4}{4!} - \\dots\\right)}_{\\cos\\theta} + i\\,\\underbrace{\\left(\\theta - \\frac{\\theta^3}{3!} + \\frac{\\theta^5}{5!} - \\dots\\right)}_{\\sin\\theta}', caption: 'Les termes pairs forment la série du cosinus, les impairs celle du sinus : trois séries célèbres alignées.' },
+      { kind: 'sim', sim: { type: 'taylor', fn: 'cos' }, caption: 'Le cosinus et ses polynômes de Taylor : ce sont les termes pairs de $e^{i\\theta}$.' },
     ],
     exercises: [
       {

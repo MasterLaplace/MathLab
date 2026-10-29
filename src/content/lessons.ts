@@ -12,6 +12,9 @@ import { lessonsNombres } from './nombres';
 import { lessonsComplexe } from './complexe';
 import { lessonsGroupes } from './groupes';
 import { lessonsPreuves } from './preuves';
+import { lessonsFondations } from './fondations';
+import { lessonsInfini } from './infini';
+import { lessonsEntropie } from './entropie';
 
 /** Entier aléatoire dans [min, max]. */
 function rand(min: number, max: number): number {
@@ -634,6 +637,9 @@ export const lessons: Lesson[] = [
   ...lessonsComplexe,
   ...lessonsGroupes,
   ...lessonsPreuves,
+  ...lessonsFondations,
+  ...lessonsInfini,
+  ...lessonsEntropie,
 ];
 
 export function lessonById(id: string): Lesson | undefined {

@@ -75,5 +75,56 @@
 }
 .course-callout-story .course-callout-label { color: var(--ok); }
 
+.course-callout-analogy {
+  background: color-mix(in srgb, #c77dff 8%, var(--surface));
+  border-color: color-mix(in srgb, #c77dff 40%, var(--border));
+}
+.course-callout-analogy .course-callout-label { color: #b56bf0; }
+
+/* Visuel interactif au fil du cours. */
+.course-sim { margin: 0.3rem 0; }
+.course-sim figcaption {
+  margin-top: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* « Devine d'abord » : prédire avant de voir. */
+.course-predict {
+  border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--border));
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+}
+.course-predict-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.course-predict-q { margin: 0.35rem 0 0.6rem; line-height: 1.6; }
+.course-predict-choices { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.course-predict-choice {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, opacity 0.2s;
+}
+.course-predict-choice:hover:not(:disabled) { border-color: var(--accent); }
+.course-predict-choice:disabled { cursor: default; }
+.course-predict-right {
+  border-color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 14%, var(--surface-2));
+}
+.course-predict-tried { border-color: var(--warn); }
+.course-predict-other { opacity: 0.55; }
+.course-predict-explain { margin: 0.7rem 0 0; line-height: 1.6; }
+
 /* KaTeX hérite de la couleur du texte du thème. */
 .course .katex { font-size: 1.05em; }

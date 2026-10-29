@@ -42,6 +42,7 @@ export const lessonsQuantique: Lesson[] = [
         text:
           'Edward Lorenz découvre l’effet papillon en 1961 en relançant une simulation météo à partir d’un chiffre arrondi (0,506 au lieu de 0,506127) : la nouvelle météo n’avait plus rien à voir. D’où la limite fondamentale des prévisions à ~10 jours — ce n’est pas un problème d’ordinateur, c’est un théorème.',
       },
+      { kind: 'sim', sim: { type: 'cobweb', mode: 'bifurcation' }, caption: 'Le chaos sans pendule : la simple suite $u_{n+1} = r\\,u_n(1-u_n)$ passe d’un point fixe au chaos par doublements de période (Phase 19). La sensibilité aux conditions initiales y est la même que celle du double pendule.' },
     ],
     exercises: [
       {

@@ -37,6 +37,21 @@ for (const lesson of lessons) {
       if (block.caption) checkText(block.caption, where + '/caption');
     }
     if (block.kind === 'example') for (const s of block.steps) checkText(s, where);
+    if (block.kind === 'sim' && block.caption) checkText(block.caption, where + '/caption');
+    if (block.kind === 'predict') {
+      checkText(block.question, where + '/question');
+      for (const c of block.choices) checkText(c, where + '/choice');
+      checkText(block.explain, where + '/explain');
+      if (block.answer < 0 || block.answer >= block.choices.length) {
+        fail++;
+        console.error(`  ✗ ${where} : réponse ${block.answer} hors des choix`);
+      }
+    }
+  }
+  // Les consignes, indices et invites des exercices passent aussi par KaTeX.
+  for (const ex of lesson.exercises) {
+    checkText(ex.prompt, `${lesson.id}/${ex.id}/prompt`);
+    for (const h of ex.hints ?? (ex.hint ? [ex.hint] : [])) checkText(h, `${lesson.id}/${ex.id}/hint`);
   }
 }
 for (const exp of expeditions) {

@@ -64,7 +64,24 @@ export type SimSpec =
   | { type: 'tunnel' }
   | { type: 'minkowski' }
   | { type: 'symmetry' }
-  | { type: 'dominoes' };
+  | { type: 'dominoes' }
+  // Batch 17 — la carte devient terrain.
+  | { type: 'algebra-tiles'; mode?: 'product' | 'square' | 'complete' }
+  | { type: 'pythagoras' }
+  | { type: 'slide-rule'; mode?: 'slide-rule' | 'decibels' }
+  | { type: 'function-transform'; mode?: 'transform' | 'inverse' }
+  | { type: 'newton' }
+  | { type: 'zeno'; mode?: 'square' | 'race' }
+  | { type: 'cobweb'; mode?: 'cobweb' | 'bifurcation' }
+  | { type: 'taylor'; fn?: TaylorFn }
+  | { type: 'pascal'; mode?: 'paths' | 'sierpinski' }
+  | { type: 'ehrenfest' }
+  | { type: 'ising' }
+  | { type: 'orbit'; mode?: 'kepler' | 'escape' }
+  | { type: 'heat-wave'; mode?: 'heat' | 'wave' | 'both' }
+  | { type: 'pictorial'; mode?: 'odd' | 'triangular' | 'geometric' };
+
+export type TaylorFn = 'exp' | 'sin' | 'cos' | 'ln1p' | 'geom' | 'sqrt1p' | 'arctan';
 
 export type SurfaceKind = 'bowl' | 'saddle' | 'wave';
 
@@ -91,8 +108,19 @@ export type CourseBlock =
   | { kind: 'math'; latex: string; caption?: string }
   /** Exemple travaillé pas à pas. */
   | { kind: 'example'; title?: string; steps: string[] }
-  /** Encadré : intuition clé, piège classique, ou anecdote historique. */
-  | { kind: 'callout'; tone: 'idea' | 'warn' | 'story'; text: string };
+  /** Encadré : intuition clé, piège classique, anecdote historique, ou analogie. */
+  | { kind: 'callout'; tone: 'idea' | 'warn' | 'story' | 'analogy'; text: string }
+  /**
+   * Visuel interactif DANS le cours (« explorable explanation ») : l'élève
+   * manipule pendant qu'il lit, avant tout exercice.
+   */
+  | { kind: 'sim'; sim: SimSpec; caption?: string }
+  /**
+   * « Devine d'abord » : une question à choix avant la révélation. Prédire
+   * avant de voir ancre la mémoire — et une erreur n'est jamais punie,
+   * seulement expliquée.
+   */
+  | { kind: 'predict'; question: string; choices: string[]; answer: number; explain: string };
 
 export interface Lesson {
   id: string;

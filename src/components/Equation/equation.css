@@ -186,3 +186,23 @@
 .eq-int-dx { font-style: italic; margin-left: 0.18em; }
 .eq-laplace { display: inline-flex; align-items: baseline; }
 .eq-lt-sign { font-style: italic; margin-right: 0.06em; }
+
+/* --- Batch 17 : factorielles, binomiaux, séries, ≈ --- */
+.eq-factorial { display: inline-flex; align-items: baseline; }
+.eq-bang { margin-left: 0.04em; font-style: normal; }
+.eq-binom { display: inline-flex; align-items: center; }
+.eq-binom-paren { font-size: 2em; line-height: 1; font-weight: 200; }
+.eq-binom-stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.85em;
+  line-height: 1.15;
+  margin: 0 0.08em;
+}
+.eq-taylor { display: inline-flex; align-items: baseline; }
+.eq-taylor-sign { font-style: italic; margin-right: 0.04em; }
+.eq-taylor-rest { opacity: 0.85; border-bottom: 1px dashed currentColor; }
+.eq-static { pointer-events: none; display: inline-flex; align-items: baseline; }
+.eq-geom { display: inline-flex; align-items: baseline; }
+.eq-geom-term { display: inline-flex; align-items: baseline; }
