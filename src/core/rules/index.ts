@@ -1,5 +1,9 @@
 import type { Expr, Path } from '../ast';
 import { algebraRules } from './algebra';
+import { combinatoireRules } from './combinatoire';
+import { logRules } from './logs';
+import { polynomeRules } from './polynome';
+import { seriesRules } from './series';
 import { cancelRules } from './cancel';
 import { complexRules } from './complex';
 import { deriveRules } from './derive';
@@ -28,6 +32,10 @@ const allRules: Rule[] = [
   ...nombresRules,
   ...groupeRules,
   ...preuveRules,
+  ...polynomeRules,
+  ...logRules,
+  ...combinatoireRules,
+  ...seriesRules,
 ];
 
 /** Toutes les manipulations légales pour le nœud sélectionné. */

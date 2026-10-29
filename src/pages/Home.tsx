@@ -31,6 +31,8 @@ const PHASE_TITLES: Record<number, string> = {
   16: 'Phase 16 — Les nombres entiers : l’arithmétique secrète',
   17: 'Phase 17 — La symétrie devient calcul : les groupes',
   18: 'Phase 18 — L’art de la preuve : récurrence, absurde, tiroirs',
+  19: 'Phase 19 — L’infini apprivoisé : suites, séries, Taylor',
+  20: 'Phase 20 — Compter pour comprendre la chaleur : l’entropie',
 };
 
 /** Une leçon terminée depuis plus de 3 jours mérite une révision. */

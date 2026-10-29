@@ -349,6 +349,7 @@ export const lessonsComplements: Lesson[] = [
         text:
           'C’est le théorème central limite, le plus important des probabilités : additionne beaucoup de petits hasards indépendants, et la cloche de Gauss apparaît — tailles humaines, erreurs de mesure, bruit électronique. Francis Galton appelait sa planche le « quinconce » et y voyait « la loi suprême du désordre ».',
       },
+      { kind: 'sim', sim: { type: 'pascal', mode: 'paths' }, caption: 'Pont vers la Phase 20 : chaque bille suit un chemin du triangle de Pascal. Le nombre de chemins vers une case, $\\binom{n}{k}$, est exactement le nombre de billes qu’elle reçoit en moyenne (sur $2^n$).' },
     ],
     exercises: [
       {

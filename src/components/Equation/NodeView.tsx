@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { type Expr, isCall } from '../../core/ast';
+import { type Expr, evalNumeric, isCall, tidyNumber } from '../../core/ast';
 
 /** Sérialise un chemin en attribut data-path ("1.2"). */
 export function pathToKey(path: number[]): string {
@@ -428,6 +428,84 @@ export function NodeView({ node, path }: NodeProps): ReactNode {
         </Wrap>
       );
 
+    case 'Approx':
+      // Approximation (après une troncature de Taylor) : = devient ≈.
+      return (
+        <Wrap path={path} className="eq-equal">
+          <NodeView node={arg(1)} path={sub(1)} />
+          <span className="eq-op eq-eq-sign">≈</span>
+          <NodeView node={arg(2)} path={sub(2)} />
+        </Wrap>
+      );
+
+    case 'Factorial':
+      return (
+        <Wrap path={path} className="eq-factorial">
+          <MaybeParens node={arg(1)} path={sub(1)} />
+          <span className="eq-op eq-bang">!</span>
+        </Wrap>
+      );
+
+    case 'Binom':
+      // « k parmi n » : n au-dessus de k, entre grandes parenthèses.
+      return (
+        <Wrap path={path} className="eq-binom">
+          <span className="eq-binom-paren">(</span>
+          <span className="eq-binom-stack">
+            <NodeView node={arg(1)} path={sub(1)} />
+            <NodeView node={arg(2)} path={sub(2)} />
+          </span>
+          <span className="eq-binom-paren">)</span>
+        </Wrap>
+      );
+
+    case 'Taylor': {
+      // Le reste d'un développement : 𝒯{f} tant que rien n'est déplié, puis O(xᵏ).
+      // Le corps est figé (pointer-events: none) : tout tap vise le nœud entier.
+      const v = typeof arg(2) === 'string' ? prettySymbol(arg(2) as string) : 'x';
+      const k = typeof arg(3) === 'number' ? (arg(3) as number) : 0;
+      if (k === 0) {
+        return (
+          <Wrap path={path} className="eq-taylor">
+            <span className="eq-fnname eq-taylor-sign">𝒯</span>
+            <span className="eq-paren">{'{'}</span>
+            <span className="eq-static">
+              <NodeView node={arg(1)} path={sub(1)} />
+            </span>
+            <span className="eq-paren">{'}'}</span>
+          </Wrap>
+        );
+      }
+      return (
+        <Wrap path={path} className="eq-taylor eq-taylor-rest">
+          <span className="eq-fnname">O</span>
+          <span className="eq-paren">(</span>
+          <span className="eq-symbol">{v}</span>
+          {k > 1 && <sup className="eq-exponent">{k}</sup>}
+          <span className="eq-paren">)</span>
+        </Wrap>
+      );
+    }
+
+    case 'GeomSeries': {
+      // a + ar + ar² + ⋯ : les trois premiers termes, calculés si possible.
+      const terms = geomTerms(arg(1), arg(2));
+      return (
+        <Wrap path={path} className="eq-geom">
+          <span className="eq-static">
+            {terms.map((term, i) => (
+              <span key={i} className="eq-geom-term">
+                {i > 0 && <span className="eq-op">+</span>}
+                <NodeView node={term} path={[...path, 90 + i]} />
+              </span>
+            ))}
+            <span className="eq-op">+</span>
+            <span className="eq-op">⋯</span>
+          </span>
+        </Wrap>
+      );
+    }
+
     default:
       return (
         <Wrap path={path} className="eq-fn">
@@ -440,6 +518,34 @@ export function NodeView({ node, path }: NodeProps): ReactNode {
         </Wrap>
       );
   }
+}
+
+/** Petit rationnel exact : entier ou fraction d'entiers. */
+function asFraction(e: Expr): [number, number] | null {
+  if (typeof e === 'number' && Number.isInteger(e)) return [e, 1];
+  if (isCall(e) && e[0] === 'Divide' && Number.isInteger(e[1]) && Number.isInteger(e[2])) {
+    return [e[1] as number, e[2] as number];
+  }
+  return null;
+}
+
+/** Les trois premiers termes a, ar, ar² d'une série géométrique, pour l'affichage. */
+function geomTerms(a: Expr, r: Expr): Expr[] {
+  const fa = asFraction(a);
+  const fr = asFraction(r);
+  if (fa && fr) {
+    return [0, 1, 2].map((k) => {
+      const p = fa[0] * fr[0] ** k;
+      const q = fa[1] * fr[1] ** k;
+      return q === 1 ? p : (['Divide', p, q] as Expr);
+    });
+  }
+  const va = evalNumeric(a);
+  const vr = evalNumeric(r);
+  if (va !== undefined && vr !== undefined) {
+    return [0, 1, 2].map((k) => tidyNumber(va * vr ** k));
+  }
+  return [a, ['Multiply', a, r], ['Multiply', a, ['Power', r, 2]]];
 }
 
 /** `2x` s'écrit sans point : nombre suivi d'un symbole/fonction. */
@@ -483,6 +589,18 @@ const GREEK: Record<string, string> = {
   omega: 'ω',
   lambda: 'λ',
   Delta: 'Δ',
+  gamma: 'γ',
+  epsilon: 'ε',
+  mu: 'μ',
+  sigma: 'σ',
+  ell: 'ℓ',
+  Omega: 'Ω',
+  Omega1: 'Ω₁',
+  Omega2: 'Ω₂',
+  x0: 'x₀',
+  x1: 'x₁',
+  u0: 'u₀',
+  v0: 'v₀',
   // Les 8 symétries du carré (groupe D₄).
   idS: '𝟙',
   r90: 'r',

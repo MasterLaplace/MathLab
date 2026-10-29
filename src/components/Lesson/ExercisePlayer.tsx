@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { type Expr, freeVariables, isCall, normalize } from '../../core/ast';
 import { reachesGoal } from '../../core/engine';
 import { playNope, playSuccess, playTick } from '../../core/sound';
@@ -6,38 +6,8 @@ import type { Move } from '../../core/rules';
 import type { Exercise } from '../../content/schema';
 import { EquationView } from '../Equation/EquationView';
 import { GraphView } from '../Graph/GraphView';
-import { KinematicsSim } from '../Physics/KinematicsSim';
-import { TangentExplorer } from '../Physics/TangentExplorer';
-import { AreaExplorer } from '../Physics/AreaExplorer';
-import { SpringSim } from '../Physics/SpringSim';
-import { VectorFieldExplorer } from '../Physics/VectorFieldExplorer';
-import { VectorsExplorer } from '../Physics/VectorsExplorer';
-import { MatrixExplorer } from '../Physics/MatrixExplorer';
-import { FourierExplorer } from '../Physics/FourierExplorer';
-import { Surface3D } from '../Physics/Surface3D';
-import { UnitCircleExplorer } from '../Physics/UnitCircleExplorer';
-import { DirectionFieldExplorer } from '../Physics/DirectionFieldExplorer';
-import { GaltonExplorer } from '../Physics/GaltonExplorer';
-import { BayesExplorer } from '../Physics/BayesExplorer';
-import { RiemannExplorer } from '../Physics/RiemannExplorer';
-import { PoleExplorer } from '../Physics/PoleExplorer';
-import { ComplexExplorer } from '../Physics/ComplexExplorer';
-import { EpicyclesExplorer } from '../Physics/EpicyclesExplorer';
-import { ProbTreeExplorer } from '../Physics/ProbTreeExplorer';
-import { RootsExplorer } from '../Physics/RootsExplorer';
-import { StringExplorer } from '../Physics/StringExplorer';
-import { EMWaveExplorer } from '../Physics/EMWaveExplorer';
-import { DomainColoringExplorer } from '../Physics/DomainColoringExplorer';
-import { RandomWalkExplorer } from '../Physics/RandomWalkExplorer';
-import { ActionExplorer } from '../Physics/ActionExplorer';
-import { FluidExplorer } from '../Physics/FluidExplorer';
-import { QuantumWellExplorer } from '../Physics/QuantumWellExplorer';
-import { DoublePendulumExplorer } from '../Physics/DoublePendulumExplorer';
-import { PhaseSpaceExplorer } from '../Physics/PhaseSpaceExplorer';
-import { TunnelExplorer } from '../Physics/TunnelExplorer';
-import { MinkowskiExplorer } from '../Physics/MinkowskiExplorer';
-import { SymmetryExplorer } from '../Physics/SymmetryExplorer';
-import { DominoesExplorer } from '../Physics/DominoesExplorer';
+import { SimView } from './SimView';
+import { MathText } from './CourseView';
 import './lesson.css';
 
 interface ExercisePlayerProps {
@@ -64,7 +34,10 @@ export function ExercisePlayer({ exercise, onSuccess, exam }: ExercisePlayerProp
   const missesRef = useRef(0);
 
   // Indices progressifs (expéditions) ou indice unique (leçons classiques).
-  const hintList = exercise.hints ?? (exercise.hint ? [exercise.hint] : []);
+  const hintList = useMemo(
+    () => exercise.hints ?? (exercise.hint ? [exercise.hint] : []),
+    [exercise.hints, exercise.hint],
+  );
 
   // Exploration pure : la simulation remplace l'équation.
   const pureExploration = Boolean(exercise.free && exercise.sim);
@@ -136,7 +109,9 @@ export function ExercisePlayer({ exercise, onSuccess, exam }: ExercisePlayerProp
 
   return (
     <div className={`exercise ${solved ? 'exercise-solved' : ''}`}>
-      <p className="exercise-prompt">{exercise.prompt}</p>
+      <p className="exercise-prompt">
+        <MathText text={exercise.prompt} />
+      </p>
 
       <div className="exercise-stage" style={pureExploration ? { display: 'none' } : undefined}>
         <EquationView
@@ -155,42 +130,7 @@ export function ExercisePlayer({ exercise, onSuccess, exam }: ExercisePlayerProp
         )}
       </div>
 
-      {exercise.sim?.type === 'kinematics' && (
-        <KinematicsSim d={exercise.sim.d} t={exercise.sim.t} solved={solved} />
-      )}
-      {exercise.sim?.type === 'tangent' && <TangentExplorer />}
-      {exercise.sim?.type === 'area' && <AreaExplorer />}
-      {exercise.sim?.type === 'vector-field' && (
-        <VectorFieldExplorer key={exercise.id} mode={exercise.sim.mode} />
-      )}
-      {exercise.sim?.type === 'spring' && <SpringSim />}
-      {exercise.sim?.type === 'vectors' && <VectorsExplorer />}
-      {exercise.sim?.type === 'matrix' && <MatrixExplorer mode={exercise.sim.mode} />}
-      {exercise.sim?.type === 'fourier' && <FourierExplorer />}
-      {exercise.sim?.type === 'surface3d' && <Surface3D fn={exercise.sim.fn} />}
-      {exercise.sim?.type === 'unit-circle' && <UnitCircleExplorer />}
-      {exercise.sim?.type === 'direction-field' && <DirectionFieldExplorer />}
-      {exercise.sim?.type === 'galton' && <GaltonExplorer />}
-      {exercise.sim?.type === 'bayes' && <BayesExplorer />}
-      {exercise.sim?.type === 'riemann' && <RiemannExplorer />}
-      {exercise.sim?.type === 'poles' && <PoleExplorer />}
-      {exercise.sim?.type === 'complex' && <ComplexExplorer />}
-      {exercise.sim?.type === 'epicycles' && <EpicyclesExplorer />}
-      {exercise.sim?.type === 'prob-tree' && <ProbTreeExplorer />}
-      {exercise.sim?.type === 'roots' && <RootsExplorer />}
-      {exercise.sim?.type === 'string-wave' && <StringExplorer />}
-      {exercise.sim?.type === 'em-wave' && <EMWaveExplorer />}
-      {exercise.sim?.type === 'domain-coloring' && <DomainColoringExplorer />}
-      {exercise.sim?.type === 'random-walk' && <RandomWalkExplorer />}
-      {exercise.sim?.type === 'action' && <ActionExplorer />}
-      {exercise.sim?.type === 'fluid' && <FluidExplorer />}
-      {exercise.sim?.type === 'quantum-well' && <QuantumWellExplorer />}
-      {exercise.sim?.type === 'double-pendulum' && <DoublePendulumExplorer />}
-      {exercise.sim?.type === 'phase-space' && <PhaseSpaceExplorer />}
-      {exercise.sim?.type === 'tunnel' && <TunnelExplorer />}
-      {exercise.sim?.type === 'minkowski' && <MinkowskiExplorer />}
-      {exercise.sim?.type === 'symmetry' && <SymmetryExplorer />}
-      {exercise.sim?.type === 'dominoes' && <DominoesExplorer />}
+      {exercise.sim && <SimView key={exercise.id} sim={exercise.sim} solved={solved} />}
 
       {exercise.free && !solved && (
         <button
@@ -205,7 +145,11 @@ export function ExercisePlayer({ exercise, onSuccess, exam }: ExercisePlayerProp
 
       {showGraph && graphable && <GraphView expr={expr} />}
 
-      {hint && !solved && <p className="exercise-hint">💡 {hint}</p>}
+      {hint && !solved && (
+        <p className="exercise-hint">
+          💡 <MathText text={hint} />
+        </p>
+      )}
 
       {steps.length > 0 && (
         <ol className="exercise-steps">

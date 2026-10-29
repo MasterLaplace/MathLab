@@ -36,6 +36,8 @@ export const moveTermAcrossEquality: Rule = (expr, from) => {
   if (head(sideExpr) !== 'Add') return [];
   const term = getAt(expr, from);
   if (term === undefined) return [];
+  // Un reste O(xᵏ) n'est pas une quantité : il ne traverse pas le signe =.
+  if (isCall(term) && term[0] === 'Taylor') return [];
 
   const otherExpr = expr[loc.other];
   const moved = negateTerm(term);

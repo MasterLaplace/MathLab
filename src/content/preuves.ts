@@ -30,6 +30,7 @@ export const lessonsPreuves: Lesson[] = [
       ] },
       { kind: 'callout', tone: 'idea', text: "La substitution est le seul geste dont la logique a besoin. « Supposons P(k) » veut juste dire : partout où tu peux, écris l'hypothèse à la place." },
       { kind: 'callout', tone: 'story', text: "Le principe porte le nom de Pascal (1654), mais Maurolico l'utilisait déjà en 1575 pour cette même somme des impairs. Poincaré y voyait « le raisonnement mathématique par excellence »." },
+      { kind: 'sim', sim: { type: 'pictorial', mode: 'odd' }, caption: 'La même hérédité, vue d’en haut : chaque nombre impair $2k+1$ est une équerre qui transforme le carré $k^2$ en $(k+1)^2$. Le dessin convainc ; la récurrence prouve.' },
     ],
     exercises: [
       {

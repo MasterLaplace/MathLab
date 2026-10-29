@@ -46,7 +46,11 @@ export function reachesGoal(current: Expr, goal: Expr, strict = false): boolean 
 
 // Les têtes matricielles et arithmétiques (Gcd, Mod) sont opaques aussi :
 // le CAS ne doit ni les évaluer ni s'y étouffer — tout passe par les gestes.
-const OPAQUE_HEADS = ['D', 'Int', 'LT', 'ILT', 'Mat2', 'Vec2', 'MatVec', 'MatMul', 'Det', 'VecScale', 'Gcd', 'Mod', 'Phi', 'Conj', 'Compose', 'Inv', 'Subst'];
+// Factorial/Binom (compter), Taylor/GeomSeries (l'infini) et Approx (≈,
+// qu'aucune équivalence sémantique ne doit confondre avec =) aussi.
+// PlusMinus : la définition de compute-engine 0.27 émet des avertissements
+// de type à chaque boxing — la comparaison structurelle suffit pour ±.
+const OPAQUE_HEADS = ['D', 'Int', 'LT', 'ILT', 'Mat2', 'Vec2', 'MatVec', 'MatMul', 'Det', 'VecScale', 'Gcd', 'Mod', 'Phi', 'Conj', 'Compose', 'Inv', 'Subst', 'Factorial', 'Binom', 'Taylor', 'GeomSeries', 'Approx', 'PlusMinus'];
 
 function containsHead(e: Expr, h: string): boolean {
   if (!isCall(e)) return false;
